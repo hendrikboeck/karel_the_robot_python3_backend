@@ -1,0 +1,7 @@
+iom_show_debug_messages: true
+iom_show_caller_information: false
+iom_show_label_out_messages: true
+
+pygame_show_warnings: false
+
+socket: "tcp/1234"

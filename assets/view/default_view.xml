@@ -1,0 +1,32 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<window name="default" width="350" height="300">
+
+  <!-- DEBUGING BLOCK -->
+  <block>
+    <item descriptor="Fps: " id="FPS"/>
+    <item descriptor="Frametime (ms): " id="FRAMETIME"/>
+    <item descriptor="WindowSize: " id="WINDOW_SIZE"/>
+  </block>
+
+  <!-- SERVER BLOCK -->
+  <block>
+    <item descriptor="ServerAddr: " id="SERVER_ADDR"/>
+    <item descriptor="ServerStatus: " id="SERVER_STATUS"/>
+  </block>
+
+  <!-- MAP BLOCK -->
+  <block>
+    <item descriptor="MapName: " id="MAP_NAME"/>
+    <item descriptor="MapSize: " id="MAP_SIZE"/>
+    <item descriptor="MapVersion: " id="MAP_VERSION"/>
+    <item descriptor="MapCMDRatio (1/s): " id="MAP_COMMAND_RATIO"/>
+  </block>
+
+  <!-- KAREL BLOCK -->
+  <block>
+    <item descriptor="KarelPosition: " id="KAREL_POSITION"/>
+    <item descriptor="KarelOrientation: " id="KAREL_ORIENTATION"/>
+    <item descriptor="KarelBeeperBag: " id="KAREL_BEEPER_BAG"/>
+  </block>
+
+</window>
