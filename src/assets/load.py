@@ -4,12 +4,17 @@ from io import BytesIO
 from xml.etree import cElementTree as ElementTree
 from xml.etree.ElementTree import Element
 import sys
+import functools
 
 # LIBRARY IMPORT
 import pygame
 from pygame import Surface
 from pygame.font import Font
 from pygame_gui.ui_manager import UIManager
+
+from constants import FUNC_CACHE_SIZE
+
+__ASSETS_FOLDER = "assets"
 
 
 # for packaging assets into .exe
@@ -21,18 +26,30 @@ def __resource_path(relativePath: str) -> str:
   return os.path.join(basePath, relativePath)
 
 
-__ASSETS_FOLDER = __resource_path("assets")
+def __get_assetpath(relativePath: str) -> str:
+  try:
+    localPath = os.path.join(__ASSETS_FOLDER, relativePath)
+    with open(localPath) as f:
+      pass
+    return localPath
+  except IOError:
+    return os.path.join(__resource_path(__ASSETS_FOLDER), relativePath)
 
 
+# @functools.lru_cache(maxsize=FUNC_CACHE_SIZE)
+# TODO: pygame.image.load already cached? -> weird artifacts
 def image(filepath: str) -> Surface:
-  filepath = os.path.join(__ASSETS_FOLDER, filepath)
+  filepath = __get_assetpath(filepath)
   return pygame.image.load(filepath).convert_alpha()
 
 
+# @functools.lru_cache(maxsize=FUNC_CACHE_SIZE)
+# TODO: pygame.image.load already cached? -> weird artifacts
 def binaryImage(bin_: bytes) -> Surface:
   return pygame.image.load(BytesIO(bin_)).convert_alpha()
 
 
+@functools.lru_cache(maxsize=FUNC_CACHE_SIZE)
 def font(name: str, size: int) -> Font:
   filepath = os.path.join(__ASSETS_FOLDER, name)
   return Font(filepath, size)
@@ -60,8 +77,9 @@ def __xmlnode_to_tuple(node: Element) -> tuple:
   return (node.tag, nodeData)
 
 
+# @functools.lru_cache(maxsize=FUNC_CACHE_SIZE)
 def xml(filepath: str) -> dict:
-  tree = ElementTree.parse(os.path.join(__ASSETS_FOLDER, filepath))
+  tree = ElementTree.parse(__get_assetpath(filepath))
   (key, value) = __xmlnode_to_tuple(tree.getroot())
 
   if type(value) == dict: return value
@@ -69,10 +87,12 @@ def xml(filepath: str) -> dict:
 
 
 def xmls(data: str) -> dict:
-  return __xmlnode_to_dict(ElementTree.fromstring(data))
+  (key, value) = __xmlnode_to_tuple(ElementTree.fromstring(data))
+  return {key: value}
 
 
 def uimanager(theme: str) -> UIManager:
   return UIManager(
-      pygame.display.get_surface().get_size(), theme_path=os.path.join(__ASSETS_FOLDER, theme)
+      pygame.display.get_surface().get_size(),
+      theme_path=__get_assetpath(theme)
   )

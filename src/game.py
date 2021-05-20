@@ -1,5 +1,5 @@
 ################################################################################
-# python_backend_karel_the_robot                                               #
+# karel_the_robot_python3_backend                                              #
 # Copyright (C) 2021  Hendrik Boeck <hendrikboeck.dev@protonmail.com>          #
 #                                                                              #
 # This program is free software: you can redistribute it and/or modify         #
@@ -30,8 +30,55 @@ from beans.io import IOM
 from beans.types import EnumLike, SingletonMeta, Vector2f, promiseList
 import assets
 from assets.color import HexColor
-from constants import GAME_ERROR_EVENT, GAME_FONT, GAME_START_EVENT
+from constants import GAME_CONTINUE_EVENT, GAME_ERROR_EVENT, GAME_FONT, GAME_START_EVENT, INFINITY
 from view.window import DebugInformationDict
+
+
+def createMapConfigFromXML(xml_: Dict[str, Any]) -> Dict[str, Any]:
+  """
+  Takes a dictonary read from a world.xml file and creates a dictonary, which
+  will be used to configure Karel, World, Tiles, Level
+
+  @param  xml_  dictonary read from a world.xml file
+  @return       configuration for World, Karel, Tiles, Level as dict
+  """
+  conf = {}
+
+  conf["world"] = {}
+
+  conf["world"]["size"] = Vector2f(*eval(xml_["size"]))
+  metadata = xml_.get("metadata", {})
+  conf["world"]["metadata"] = {
+      "name": metadata.get("name", "unkown"),
+      "version": metadata.get("version", "unkown"),
+      "author": metadata.get("author", "unkown"),
+      "speed": xml_.get("speed", "1.0")
+  }
+
+  walls = promiseList(xml_.get("wall", []))
+  for wall in walls:
+    wall["start"] = Vector2f(*eval(wall["start"]))
+    wall["length"] = abs(int(wall.get("length", "1")))
+    wall["orientation"] = KarelOrientation.fromString(wall["orientation"])
+  conf["world"]["walls"] = walls
+
+  beepers = promiseList(xml_.get("beeper", []))
+  for beeper in beepers:
+    beeper["position"] = Vector2f(*eval(beeper["position"]))
+    beeper["n"] = abs(int(float(beeper.get("n", "1"))))
+  conf["world"]["beepers"] = beepers
+
+  karel = xml_.get("karel", {})
+  conf["karel"] = {}
+  conf["karel"]["position"] = Vector2f(*eval(karel.get("position", "(1, 1)")))
+  conf["karel"]["orientation"] = KarelOrientation.fromString(
+      karel.get("orientation", "EAST")
+  )
+  conf["karel"]["beeperbag"] = float(karel.get("beeperbag", "inf"))
+
+  conf["speed"] = abs(float(xml_.get("speed", "1.0")))
+
+  return conf
 
 
 class ActionExecutionError(RuntimeError):
@@ -210,10 +257,6 @@ class Tile():
     if self._beepers > 0:
       beeperSurf = assets.load.image("64x/beeper.png")
       beeperRect = beeperSurf.get_rect()
-      if self.rect.width != beeperRect.width:
-        beeperSurf = pg.transform.smoothscale(
-            beeperSurf, (self.rect.width, self.rect.height)
-        )
       self.surf.blit(beeperSurf, (0, 0))
     if self._beepers > 1:
       beeperNumFont = assets.load.font(GAME_FONT, 14)
@@ -221,7 +264,7 @@ class Tile():
           str(self._beepers), True, HexColor("#000000")
       )
       beeperNumRect = beeperNumSurf.get_rect()
-      beeperNumRect.center = self.rect.center
+      beeperNumRect.center = (self.rect.width / 2, self.rect.height / 2)
       self.surf.blit(beeperNumSurf, beeperNumRect)
 
   def addWall(self, angle: float) -> None:
@@ -340,8 +383,32 @@ class Karel():
         KarelOrientation.fromAngle((self.orientation.angle + 90) % 360)
     )
 
+  def incrBeeperbag(self) -> None:
+    if self.beeperbag != INFINITY:
+      self.beeperbag += 1
+
+  def decrBeeperbag(self) -> None:
+    if self.beeperbag != INFINITY:
+      self.beeperbag -= 1
+
+  def beeperbagIsEmpty(self) -> None:
+    if self.beeperbag == INFINITY:
+      return False
+    else:
+      return self.beeperbag > 0.0
+
 
 class World():
+  """
+  Represents the World Karel is playing on. This class only represents the 
+  dataclass and specifies the rendering of the World-object. This class has no
+  information on any game-logic or karel.
+
+  @param  tiles   a 2D-array of all tiles in the map KCS(1, 1) is INDEX(0, 0)
+  @param  size    the size of the world in measured in Tiles
+  @param  surf    render-surface as pygame.Surface
+  @param  rect    bounds of surf as pygame.Rect   
+  """
 
   tiles: List[List[Tile]]
   size: Vector2f
@@ -391,104 +458,123 @@ class World():
     self.rebuild()
 
   def rebuild(self) -> None:
+    """
+    Rebuilds the render-surface of World.
+    """
     for row in self.tiles:
       for tile in row:
         self.surf.blit(tile.surf, tile.rect)
 
-  def render(self, surf: Surface) -> None:
-    surf.blit(self.surf, self.rect)
+  def render(self, destSurf: Surface) -> None:
+    """
+    Renders render-surface on destination-surface.
 
-  # KCS - Karel Cordinate System
+    @param  destSurf  destination-surface
+    """
+    destSurf.blit(self.surf, self.rect)
+
   def getTileAtKCS(
       self, pos: Union[Tuple[float, float], List[float], Vector2f]
   ) -> Tile:
+    """
+    Returns the coresponding Tile for a cordinate in the KCS (Karel Cordinate
+    System).
+
+    @param  pos   cordinate in the KCS (Karel Cordinate System)
+    @return       coresponding tile as Tile
+    """
     return self.tiles[int(pos[1]) - 1][int(pos[0]) - 1]
 
   def isOutOfBoundsKCS(
       self, pos: Union[Tuple[float, float], List[float], Vector2f]
   ) -> bool:
+    """
+    Checks if a cordinate in KCS is out of bounds of the World.
+
+    @param  pos   cordinate in the KCS (Karel Cordinate System)
+    @return       True if out of bounds of the World
+    """
     pos = Vector2f._make(pos)
     return pos < (1, 1) or pos > self.size
 
-  def rebuildTileAt(
+  def rebuildTileAtKCS(
       self, pos: Union[Tuple[float, float], List[float], Vector2f]
   ) -> None:
-    tile = self.getTileAt(pos)
+    """
+    Rebuilds Tile at a scpecific cordinate in KCS.
+
+    @param  pos   cordinate in the KCS (Karel Cordinate System)
+    """
+    tile = self.getTileAtKCS(pos)
     tile.rebuild()
     self.surf.blit(tile.surf, tile.rect)
 
-
-def createMapConfigFromXML(xml_: Dict[str, Any]) -> Dict[str, Any]:
-  conf = {}
-
-  conf["world"] = {}
-
-  conf["world"]["size"] = Vector2f(*eval(xml_["size"]))
-  metadata = xml_.get("metadata", {})
-  conf["world"]["metadata"] = {
-      "name": metadata.get("name", "unkown"),
-      "version": metadata.get("version", "unkown"),
-      "author": metadata.get("author", "unkown"),
-      "speed": xml_.get("speed", "1.0")
-  }
-
-  walls = promiseList(xml_.get("wall", []))
-  for wall in walls:
-    wall["start"] = Vector2f(*eval(wall["start"]))
-    wall["length"] = abs(int(wall.get("length", "1")))
-    wall["orientation"] = KarelOrientation.fromString(wall["orientation"])
-  conf["world"]["walls"] = walls
-
-  beepers = promiseList(xml_.get("beeper", []))
-  for beeper in beepers:
-    beeper["position"] = Vector2f(*eval(beeper["position"]))
-    beeper["n"] = abs(int(float(beeper.get("n", "1"))))
-  conf["world"]["beepers"] = beepers
-
-  karel = xml_.get("karel", {})
-  conf["karel"] = {}
-  conf["karel"]["position"] = Vector2f(*eval(karel.get("position", "(1, 1)")))
-  conf["karel"]["orientation"] = KarelOrientation.fromString(
-      karel.get("orientation", "EAST")
-  )
-  conf["karel"]["beeperbag"] = float(karel.get("beeperbag", "inf"))
-
-  conf["speed"] = abs(float(xml_.get("speed", "1.0")))
-
-  return conf
+  def repaintTileAtKCS(
+      self, pos: Union[Tuple[float, float], List[float], Vector2f]
+  ) -> None:
+    tile = self.getTileAtKCS(pos)
+    self.surf.blit(tile.surf, tile.rect)
 
 
 class LevelState(EnumLike):
+  """
+  Enum which describes the different states for the level.
+  """
 
   INIT = 1
   RUNNING = 2
-  ERROR = 3
-  FINISHED = 4
+  PAUSE = 3
+  ERROR = 4
+  FINISHED = 5
 
   @staticmethod
   def toStr(state: int) -> str:
+    """
+    Converts a LevelState to str.
+
+    @param  state   state as LevelState
+    @return         state as str
+    """
     if state == LevelState.INIT:
-      return "LevelState.INIT"
+      return "LS_INIT"
+    elif state == LevelState.PAUSE:
+      return "LS_PAUSE"
     elif state == LevelState.RUNNING:
-      return "LevelState.RUNNING"
+      return "LS_RUNNING"
     elif state == LevelState.ERROR:
-      return "LevelState.ERROR"
+      return "LS_ERROR"
     elif state == LevelState.FINISHED:
-      return "LevelState.FINISHED"
+      return "LS_FINISHED"
 
 
 class Level():
+  """
+  The main datastructure that describes the game-world. It holds all information
+  about the logic of the game. It also holds all game-objects and is responsible
+  for rendering and scaling the World and Karel.
+
+  @param  surf        render-surface as pygame.Surface
+  @param  rect        bounds of surf as pygame.Rect   
+  @param  state       state of the Level as LevelState
+  @param  speed       current Karel-Actions per seconds
+  @param  world       World-object
+  @param  karel       Karel-object
+  @param  scaledSurf  scaled surface, if world is to big for bounds, else None
+  @param  scaledRatio ratio in which the world is scaled, default: 1.0
+  @param  isScaled    True if world is in scaled mode
+  """
 
   surf: Surface
-  renderSurf: Surface
   rect: Rect
 
   state: int
-  rFactor: float  # scale
-  karelLastPosition: Vector2f
   speed: float
   world: World
   karel: Karel
+
+  scaledSurf: Surface
+  scaledRatio: float
+  isScaled: bool
 
   def __init__(
       self, mapName: str, bounds: Union[Tuple[float, float], List[float],
@@ -499,8 +585,6 @@ class Level():
       map_ = createMapConfigFromXML(mapXml)
     except Exception as e:
       raise MapLoadingError(e)
-      #raise e
-      #raise MapLoadingError(f"XML-file not found or wrong Map-format: Excpetion: {e}")
 
     self.world = World(map_["world"])
     self.karel = Karel(map_["karel"])
@@ -508,62 +592,118 @@ class Level():
     self.surf = Surface((self.world.rect.width + 2, self.world.rect.height + 2))
     self.rect = self.surf.get_rect()
     self.state = LevelState.INIT
-    self.gChanged = False
-    self.rFactor = 1.0
+
+    # scaling
+    self.isScaled = False
+    self.scaledRatio = 1.0
+    self.scaledSurf = None
+
+    scaledRatio = min(bounds[0] / self.rect.width, bounds[1] / self.rect.height)
+    if scaledRatio < 1.0:
+      self.setScaledRect(scaledRatio)
 
     self.repaint()
 
-    ratio = min(bounds[0] / self.rect.width, bounds[1] / self.rect.height)
-    if ratio < 1.0:
-      self.scale(ratio)
-
   def playable(self) -> bool:
+    """
+    Checks, wether the level is currently playable or not.
+
+    @return   True if level is playable
+    """
     return (self.state == LevelState.RUNNING)
 
-  def scale(self, rFactor: float) -> None:
-    self.rFactor = rFactor
-    orgRect = self.surf.get_rect()
-    self.rect.width = orgRect.width * self.rFactor
-    self.rect.height = orgRect.height * self.rFactor
-    if self.rFactor != 1.0:
-      IOM.out("WARNING: slow performance, due to scaling (map to big)")
+  def pause(self) -> None:
+    self._changeLevelState(LevelState.PAUSE)
+    pg.time.set_timer(GAME_CONTINUE_EVENT, int(1000 / self.speed), 1)
+
+  def setScaledRect(self, scaledRatio: float) -> None:
+    """
+    Rescales the rect of Level using scaledRatio, initializes scaledSurf and
+    sets the level in scaled mode.
+
+    @param  scaledRatio   ratio the surf should be scaled to
+    """
+    self.isScaled = True
+    self.scaledRatio = scaledRatio
+    self.rect.width = self.rect.width * self.scaledRatio
+    self.rect.height = self.rect.height * self.scaledRatio
+
+    self.scaledSurf = Surface((self.rect.width, self.rect.height))
 
   def repaint(self) -> None:
+    """
+    Repaint the game surface (scaled surface to if in scaled mode).
+    """
     self.surf.fill(HexColor("#000000"))
     self.surf.blit(self.world.surf, (1, 1))
-    karelRect = self.world.getTileAt(self.karel.position).rect
-    self.surf.blit(self.karel.surf, (karelRect.x + 1, karelRect.y + 1))
 
-  def update(self) -> None:
+    karelAbsolutePosition = self.world.getTileAtKCS(self.karel.position).rect
+    self.surf.blit(
+        self.karel.surf,
+        (karelAbsolutePosition.x + 1, karelAbsolutePosition.y + 1)
+    )
+
+    # render scaled-version onto scaledSurf, if in scaled mode
+    if self.isScaled:
+      self.scaledSurf.blit(
+          pg.transform.smoothscale(
+              self.surf, (self.rect.width, self.rect.height)
+          ), (0, 0)
+      )
+
+  def update(self, speed: float) -> None:
+    """
+    Update level and information about level
+    """
+    self.speed = speed
     DebugInformationDict().update(
         KAREL_POSITION=self.karel.position,
         KAREL_ORIENTATION=
         f"{self.karel.orientation.name} / {self.karel.orientation.angle}",
-        KAREL_BEEPER_BAG=self.karel.beeperbag
+        KAREL_BEEPER_BAG=self.karel.beeperbag,
+        MAP_RENDER_SCALE=self.scaledRatio
     )
 
-  def render(self, surf: Surface) -> None:
-    if self.rFactor != 1.0:
-      # TODO: bad performance in software-mode
-      surf.blit(
-          pg.transform.smoothscale(
-              self.surf, (self.rect.width, self.rect.height)
-          ), self.rect
-      )
+  def render(self, destSurf: Surface) -> None:
+    """
+    Renders render-surface on destination-surface.
+
+    @param  destSurf  destination-surface
+    """
+    if self.isScaled:
+      destSurf.blit(self.scaledSurf, self.rect)
     else:
-      surf.blit(self.surf, self.rect)
+      destSurf.blit(self.surf, self.rect)
 
   def proccessEvent(self, event: pg.event.Event) -> None:
+    """
+    Processes a pygame event.
+
+    @param  event   pygame event
+    """
     if event == GAME_ERROR_EVENT:
       self._changeLevelState(LevelState.ERROR)
     if event == GAME_START_EVENT:
       self._changeLevelState(LevelState.RUNNING)
+    if event == GAME_CONTINUE_EVENT:
+      self._changeLevelState(LevelState.RUNNING)
 
   def _changeLevelState(self, state: int) -> None:
+    """
+    Changes the current level state.
+
+    @param  state   new level state
+    """
+    IOM.debug(
+        f"levelstate changed from '{LevelState.toStr(self.state)}' to '{LevelState.toStr(state)}'"
+    )
     self.state = state
-    IOM.debug(f"levelstate changed to '{LevelState.toStr(self.state)}'")
 
   def startLevel(self) -> None:
+    """
+    Starts the level and makes it playable. It will only start the level, if
+    it was in the init state before.
+    """
     if self.state == LevelState.INIT:
       self.state = LevelState.RUNNING
     else:
@@ -571,10 +711,13 @@ class Level():
           f"can not start level: wrong state '{LevelState.toStr(self.state)}'"
       )
 
-  def waitOnStart(self) -> None:
-    if self.state == LevelState.INIT:
-      IOM.out(f"waiting on '{GAME_START_EVENT.attr1}'")
-      while self.state == LevelState.INIT:
+  def waitOnRunning(self) -> None:
+    """
+    Stops the thread, till the level has been started.
+    """
+    if self.state == LevelState.INIT or self.state == LevelState.PAUSE:
+      # IOM.out(f"WAIT FOR '{GAME_START_EVENT.attr1}' or '{GAME_CONTINUE_EVENT.attr1}'")
+      while self.state == LevelState.INIT or self.state == LevelState.PAUSE:
         sleep(0.07)
 
   #
@@ -586,7 +729,7 @@ class Level():
   def karelMove(self) -> None:
     if self.playable():
       if self.karelFrontIsClear():
-        self.world.rebuildTileAt(self.karel.position)
+        self.world.rebuildTileAtKCS(self.karel.position)
         self.karel.position += self.karel.orientation.vector
         self.repaint()
       else:
@@ -596,7 +739,7 @@ class Level():
 
   def karelTurnLeft(self) -> None:
     if self.playable():
-      self.world.rebuildTileAt(self.karel.position)
+      self.world.rebuildTileAtKCS(self.karel.position)
       self.karel.rotate90()
       self.repaint()
     else:
@@ -607,7 +750,7 @@ class Level():
       if self.karelBeeperPresent():
         self.world.getTileAtKCS(self.karel.position).decrBeepers()
         self.karel.incrBeeperbag()
-        self.world.rebuildTileAt(self.karel.position)
+        self.world.repaintTileAtKCS(self.karel.position)
         self.repaint()
       else:
         raise ActionExecutionError()
@@ -616,10 +759,10 @@ class Level():
 
   def karelPutBeeper(self) -> None:
     if self.playable():
-      if not self.karel.beeperbagIsEmpty():
+      if self.karelBeeperInBag():
         self.world.getTileAtKCS(self.karel.position).incrBeepers()
         self.karel.decrBeeperbag()
-        self.world.rebuildTileAt(self.karel.position)
+        self.world.repaintTileAtKCS(self.karel.position)
         self.repaint()
       else:
         raise ActionExecutionError()
@@ -632,11 +775,12 @@ class Level():
     nextTileKCSPoint = self.karel.position + orientation.vector
 
     outOfBounds = self.world.isOutOfBoundsKCS(nextTileKCSPoint)
-    hitWall = self.world.getTileAtKCS(self.karel.position).wallAt(
-        orientation.angle
-    ) or self.world.getTileAtKCS(nextTileKCSPoint).wallAt(
-        (orientation.angle + 180) % 360
-    )
+    hitWall = outOfBounds or self.world.getTileAtKCS(
+        self.karel.position
+    ).wallAt(orientation.angle
+            ) or self.world.getTileAtKCS(nextTileKCSPoint).wallAt(
+                (orientation.angle + 180) % 360
+            )
 
     return outOfBounds or hitWall
 
@@ -652,7 +796,7 @@ class Level():
           KarelOrientation.fromAngle((self.karel.orientation.angle + 90) % 360)
       )
     else:
-      return UnallowedActionError("karelLeftIsClear")
+      raise UnallowedActionError("karelLeftIsClear")
 
   def karelRightIsClear(self) -> bool:
     if self.playable():
@@ -664,8 +808,51 @@ class Level():
     else:
       return UnallowedActionError("karelLeftIsClear")
 
+  def karelBeeperInBag(self) -> bool:
+    if self.playable():
+      return not self.karel.beeperbagIsEmpty()
+    else:
+      raise UnallowedActionError("karelBeeperInBag")
+
+  def karelBeeperPresent(self) -> bool:
+    if self.playable():
+      return self.world.getTileAtKCS(self.karel.position).getBeepers() > 0.0
+    else:
+      raise UnallowedActionError("karelBeeperPresent")
+
+  def karelFacingNorth(self) -> bool:
+    if self.playable():
+      return self.karel.orientation == KarelOrientation.NORTH
+    else:
+      raise UnallowedActionError("karelFacingNorth")
+
+  def karelFacingEast(self) -> bool:
+    if self.playable():
+      return self.karel.orientation == KarelOrientation.EAST
+    else:
+      raise UnallowedActionError("karelFacingEast")
+
+  def karelFacingSouth(self) -> bool:
+    if self.playable():
+      return self.karel.orientation == KarelOrientation.SOUTH
+    else:
+      raise UnallowedActionError("karelFacingSouth")
+
+  def karelFacingWest(self) -> bool:
+    if self.playable():
+      return self.karel.orientation == KarelOrientation.WEST
+    else:
+      raise UnallowedActionError("karelFacingWest")
+
 
 class LevelManager(metaclass=SingletonMeta):
+  """
+  Singleton that manages the current level.
+
+  @extends  SingletonMeta
+
+  @param  currentLevel  current level
+  """
 
   currentLevel: Level
 
@@ -673,7 +860,17 @@ class LevelManager(metaclass=SingletonMeta):
     self.currentLevel = level
 
   def setCurrentLevel(self, level: Level) -> None:
+    """
+    Setter for currentLevel
+
+    @param  level   new level
+    """
     self.currentLevel = level
 
   def getCurrentLevel(self) -> Level:
+    """
+    Returns current level.
+
+    @return   current level
+    """
     return self.currentLevel

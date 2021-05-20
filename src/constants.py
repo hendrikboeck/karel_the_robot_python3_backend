@@ -4,6 +4,9 @@ from pygame.event import Event
 from beans.types import Vector2f
 from assets.color import HexColor
 
+# PERFOMANCE
+FUNC_CACHE_SIZE = 8
+
 # Math
 INFINITY = float("inf")
 
@@ -16,6 +19,7 @@ UTF8 = "utf-8"
 # Events
 PYGAME_USEREVENT = USEREVENT + 1
 GAME_START_EVENT = Event(PYGAME_USEREVENT, attr1="game_start_event")
+GAME_CONTINUE_EVENT = Event(PYGAME_USEREVENT, attr1="game_continue_event")
 GAME_ERROR_EVENT = Event(PYGAME_USEREVENT, attr1="game_error_event")
 GAME_FINISHED_EVENT = Event(PYGAME_USEREVENT, attr1="game_finished_event")
 

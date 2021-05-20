@@ -154,7 +154,7 @@ class Sidemenu(UIPanel):
             0.7 * (containerRect.width - 2*padding), (containerRect.height - 3*padding) / 2
         ),
         start_value=1.0,
-        value_range=(0.5, 10.0),
+        value_range=(0.5, 15.0),
         manager=self.ui_manager,
         container=self._container
     )

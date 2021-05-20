@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- DOCUMENT START -->
+<map size="(19, 9)" speed="1.00">
+
+  <!-- METADATA -->
+  <metadata name="ClimbingTwoPyramids" version="1.0" author="" />
+
+  <!-- MAP OBJECTS -->
+  <karel position="(1, 1)" orientation="EAST" beeperbag="inf" />
+  <wall start="(3, 1)" length="1" orientation="WEST" />
+  <wall start="(3, 2)" length="1" orientation="SOUTH" />
+  <wall start="(4, 2)" length="1" orientation="WEST" />
+  <wall start="(4, 3)" length="1" orientation="SOUTH" />
+  <wall start="(5, 3)" length="1" orientation="WEST" />
+  <wall start="(5, 4)" length="1" orientation="SOUTH" />
+  <wall start="(6, 4)" length="1" orientation="WEST" />
+  <wall start="(6, 5)" length="1" orientation="SOUTH" />
+  <wall start="(7, 5)" length="1" orientation="WEST" />
+  <wall start="(7, 6)" length="1" orientation="SOUTH" />
+  <wall start="(8, 5)" length="1" orientation="WEST" />
+  <wall start="(8, 5)" length="1" orientation="SOUTH" />
+  <wall start="(9, 4)" length="1" orientation="WEST" />
+  <wall start="(9, 4)" length="1" orientation="SOUTH" />
+  <wall start="(10, 3)" length="1" orientation="WEST" />
+  <wall start="(10, 3)" length="1" orientation="SOUTH" />
+  <wall start="(11, 2)" length="1" orientation="WEST" />
+  <wall start="(11, 2)" length="1" orientation="SOUTH" />
+  <wall start="(12, 1)" length="1" orientation="WEST" />
+  <wall start="(15, 1)" length="1" orientation="WEST" />
+  <wall start="(15, 2)" length="1" orientation="SOUTH" />
+  <wall start="(16, 2)" length="1" orientation="WEST" />
+  <wall start="(16, 3)" length="1" orientation="SOUTH" />
+  <wall start="(17, 2)" length="1" orientation="WEST" />
+  <wall start="(17, 2)" length="1" orientation="SOUTH" />
+  <wall start="(18, 1)" length="1" orientation="WEST" />
+  <beeper position="(4, 3)" n="1" />
+  <beeper position="(6, 5)" n="1" />
+  <beeper position="(10, 3)" n="1" />
+  <beeper position="(16, 3)" n="1" />
+  <beeper position="(17, 2)" n="1" />
+
+</map>
+<!-- DOCUMENT END -->

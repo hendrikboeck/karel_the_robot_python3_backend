@@ -4,15 +4,17 @@ import importlib
 
 import pygame as pg
 from pygame import Color, Rect, Surface
-from pygame.constants import KEYUP, K_SPACE, K_q, K_w
+from pygame.constants import KEYUP, K_SPACE, K_h, K_j, K_q, K_w
 from pygame.event import Event
 from pygame_gui.ui_manager import UIManager
 import assets
 from beans.io import IOM
+from beans.types import SingletonMeta
 
 from constants import *
 from game import Level, LevelManager
 from view.menu import Sidemenu
+
 
 
 class ISceneInterface(ABC):
@@ -36,6 +38,20 @@ class ISceneInterface(ABC):
 ##   def create(classname: str, args: list) -> ISceneInterface:
 ##     Class = getattr(importlib.import_module("view.scene"), classname)
 ##     return Class(*args)
+
+
+class SceneManager(metaclass=SingletonMeta):
+
+  _cur: ISceneInterface
+
+  def __init__(self) -> None:
+    self._cur = WelcomeScene()
+  
+  def setScene(self, newScene: ISceneInterface) -> None:
+    self._cur = newScene
+  
+  def getScene(self) -> ISceneInterface:
+    return self._cur
 
 
 class WelcomeScene(ISceneInterface):
@@ -70,34 +86,43 @@ class GameScene(ISceneInterface):
   backgroundSurf: Surface
   uiManager: UIManager
   sidemenu: Sidemenu
-  level: Level
 
   def __init__(self) -> None:
+    if LevelManager().getCurrentLevel() is None:
+      raise Exception("A Level has to loded, before GameScene in initialized")
+
     self.backgroundSurf = Surface(tuple(WINDOW_DIMENSIONS))
     self.backgroundSurf.fill(SCREEN_BACKGROUND_COLOR)
     self.uiManager = assets.load.uimanager("theme/Sidemenu.json")
     self.sidemenu = Sidemenu(self.uiManager, 300)
+
     windowDimension = pg.display.get_surface().get_size()
-    self.level = Level("BeeperPicking", (windowDimension[0] - 320, windowDimension[1] - 20))
-    LevelManager().setCurrentLevel(self.level)
 
   def render(self, screen: Surface) -> None:
+    level = LevelManager().getCurrentLevel()
+    
     screen.blit(self.backgroundSurf, (0, 0))
     self.uiManager.draw_ui(screen)
     windowDimension = pg.display.get_surface().get_size()
-    self.level.rect.center = ((windowDimension[0] + 300) / 2, windowDimension[1] / 2)
-    self.level.render(screen)
+    level.rect.center = ((windowDimension[0] + 300) / 2, windowDimension[1] / 2)
+    level.render(screen)
 
   def proccessEvent(self, event: Event) -> Union[Any, None]:
-    self.uiManager.process_events(event)
-    self.level.proccessEvent(event)
+    level = LevelManager().getCurrentLevel()
 
-    if event.type == KEYUP:
-      if event.key == K_w:
-        self.level.karelMove()
-      elif event.key == K_q:
-        self.level.karelTurnLeft()
+    self.uiManager.process_events(event)
+    level.proccessEvent(event)
+
+    # if event.type == KEYUP:
+    #   if event.key == K_w:
+    #     level.karelMove()
+    #   elif event.key == K_q:
+    #     level.karelTurnLeft()
+    #   elif event.key == K_h:
+    #     level.karelPickBeeper()
+    #   elif event.key == K_j:
+    #     level.karelPutBeeper()
 
   def update(self, **kwargs) -> Union[Any, None]:
     self.uiManager.update(kwargs["time_delta"])
-    self.level.update()
+    LevelManager().getCurrentLevel().update(self.sidemenu.speedSlider.current_value)

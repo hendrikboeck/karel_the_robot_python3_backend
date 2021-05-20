@@ -4,3 +4,6 @@ client.py
 countlines.py
 .vscode
 env
+build
+dist
+classes.drawio

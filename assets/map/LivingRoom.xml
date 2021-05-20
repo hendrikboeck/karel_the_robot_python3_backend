@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- DOCUMENT START -->
+<map size="(10, 7)" speed="1.00">
+
+  <!-- METADATA -->
+  <metadata name="LivingRoom" version="2020-12-02" author="Hendrik Boeck" />
+
+  <!-- MAP OBJECTS -->
+  <karel position="(1, 1)" orientation="EAST" beeperbag="inf" />
+  <wall start="(7, 1)" length="3" orientation="WEST" />
+  <wall start="(7, 4)" length="4" orientation="SOUTH" />
+  <beeper position="(8, 4)" n="1" />
+
+</map>
+<!-- DOCUMENT END -->

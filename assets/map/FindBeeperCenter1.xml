@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- DOCUMENT START -->
+<map size="(5, 5)" speed="1.00">
+
+  <!-- METADATA -->
+  <metadata name="FindBeeperCenter1" version="2020-12-02" author="Hendrik Boeck" />
+
+  <!-- MAP OBJECTS -->
+  <karel position="(1, 1)" orientation="EAST" beeperbag="inf" />
+
+</map>
+<!-- DOCUMENT END -->

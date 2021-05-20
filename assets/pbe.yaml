@@ -4,4 +4,4 @@ iom_show_label_out_messages: true
 
 pygame_show_warnings: false
 
-socket: "tcp/1234"
+socket: "tcp/14480"

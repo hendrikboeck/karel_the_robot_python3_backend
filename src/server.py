@@ -1,5 +1,5 @@
 ################################################################################
-# python_backend_karel_the_robot                                               #
+# karel_the_robot_python3_backend                                              #
 # Copyright (C) 2021  Hendrik Boeck <hendrikboeck.dev@protonmail.com>          #
 #                                                                              #
 # This program is free software: you can redistribute it and/or modify         #
@@ -139,7 +139,7 @@ class UDPServerINET(IServerInterface):
       (data, addr) = self.sock.recvfrom(UDP_MAX_PKG_SIZE)
       data = data.decode(UTF8)
       addr = SocketAddr._make(addr)
-      IOM.debug(f"RECV udp://{self.addr} <- {addr}: \"{data}\"")
+      IOM.debug(f"RECV udp://{self.addr} <- {addr}: {data}")
       return (data, addr)
     except:
       IOM.error(
@@ -152,7 +152,7 @@ class UDPServerINET(IServerInterface):
       if addr is None:
         raise ConnectionError()
       self.sock.sendto(data.encode(UTF8), addr)
-      IOM.debug(f"SEND udp://{self.addr} -> {addr}: \"{data}\"")
+      IOM.debug(f"SEND udp://{self.addr} -> {addr}: {data}")
     except:
       IOM.error(
           f"udp://{self.addr}: could not send data; client {addr} not found or invalid"
@@ -216,7 +216,7 @@ class TCPServerINET(IServerInterface):
         self._disconnectClient()
         return self.recv()
       else:
-        IOM.debug(f"RECV tcp://{self.addr} <- {self.clientAddr}: \"{data}\"")
+        IOM.debug(f"RECV tcp://{self.addr} <- {self.clientAddr}: {data}")
         self._sockErrCount = 0
         return (data, None)
     except:
@@ -234,7 +234,7 @@ class TCPServerINET(IServerInterface):
     try:
       if addr is None or addr == self.clientAddr:
         self.clientSock.sendall(data.encode(UTF8))
-        IOM.debug(f"SEND tcp://{self.addr} -> {self.clientAddr}: \"{data}\"")
+        IOM.debug(f"SEND tcp://{self.addr} -> {self.clientAddr}: {data}")
       else:
         raise ConnectionError()
     except:

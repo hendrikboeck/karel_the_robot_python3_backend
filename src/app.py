@@ -10,7 +10,7 @@ import assets
 from constants import *
 from view.menu import ClickButtonMenu
 from view.overlay import FPSOverlay
-from view.scene import GameScene, WelcomeScene
+from view.scene import GameScene, SceneManager, WelcomeScene
 from view.window import DebugWindow, DebugInformationDict
 from server import ServerThread, SocketAddr
 
@@ -53,8 +53,6 @@ class App():
 
     fpsoverlay = FPSOverlay(visible=False)
 
-    scene = WelcomeScene()
-
     gameloop = True
     clock = pg.time.Clock()
 
@@ -63,6 +61,7 @@ class App():
     # ----------------------------------------------------------------------------------------
 
     while (gameloop):
+      scene = SceneManager().getScene()
       frametime = clock.tick(FRAME_RATE)
       fps = clock.get_fps()
 
@@ -74,11 +73,6 @@ class App():
         rmenu.process_event(event)
         fpsoverlay.proccessEvent(event)
         scene.proccessEvent(event)
-
-      pressed = pg.key.get_pressed()
-      if pressed[pg.K_SPACE]:
-        if type(scene) != GameScene:
-          scene = GameScene()
 
       menuManager.update(frametime / 1000.0)
       scene.update(time_delta=frametime / 1000.0)
