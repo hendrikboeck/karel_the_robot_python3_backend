@@ -1,3 +1,21 @@
+################################################################################
+# karel_the_robot_python3_backend                                              #
+# Copyright (C) 2021  Hendrik Boeck <hendrikboeck.dev@protonmail.com>          #
+#                                                                              #
+# This program is free software: you can redistribute it and/or modify         #
+# it under the terms of the GNU General Public License as published by         #
+# the Free Software Foundation, either version 3 of the License, or            #
+# (at your option) any later version.                                          #
+#                                                                              #
+# This program is distributed in the hope that it will be useful,              #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of               #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                #
+# GNU General Public License for more details.                                 #
+#                                                                              #
+# You should have received a copy of the GNU General Public License            #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.        #
+################################################################################
+
 # STL IMPORT
 import os
 from io import BytesIO
@@ -12,10 +30,8 @@ from pygame import Surface
 from pygame.font import Font
 from pygame_gui.ui_manager import UIManager
 
-from constants import FUNC_CACHE_SIZE
-
-__ASSETS_FOLDER = "assets"
-
+# LOCAL IMPORT
+from constants import FUNC_CACHE_SIZE, ASSETS_FOLDER
 
 # for packaging assets into .exe
 def __resource_path(relativePath: str) -> str:
@@ -28,12 +44,12 @@ def __resource_path(relativePath: str) -> str:
 
 def __get_assetpath(relativePath: str) -> str:
   try:
-    localPath = os.path.join(__ASSETS_FOLDER, relativePath)
+    localPath = os.path.join(ASSETS_FOLDER, relativePath)
     with open(localPath) as f:
       pass
     return localPath
   except IOError:
-    return os.path.join(__resource_path(__ASSETS_FOLDER), relativePath)
+    return os.path.join(__resource_path(ASSETS_FOLDER), relativePath)
 
 
 # @functools.lru_cache(maxsize=FUNC_CACHE_SIZE)
@@ -51,7 +67,7 @@ def binaryImage(bin_: bytes) -> Surface:
 
 @functools.lru_cache(maxsize=FUNC_CACHE_SIZE)
 def font(name: str, size: int) -> Font:
-  filepath = os.path.join(__ASSETS_FOLDER, name)
+  filepath = __get_assetpath(name)
   return Font(filepath, size)
 
 

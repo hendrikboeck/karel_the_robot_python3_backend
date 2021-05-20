@@ -1,20 +1,38 @@
+################################################################################
+# karel_the_robot_python3_backend                                              #
+# Copyright (C) 2021  Hendrik Boeck <hendrikboeck.dev@protonmail.com>          #
+#                                                                              #
+# This program is free software: you can redistribute it and/or modify         #
+# it under the terms of the GNU General Public License as published by         #
+# the Free Software Foundation, either version 3 of the License, or            #
+# (at your option) any later version.                                          #
+#                                                                              #
+# This program is distributed in the hope that it will be useful,              #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of               #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                #
+# GNU General Public License for more details.                                 #
+#                                                                              #
+# You should have received a copy of the GNU General Public License            #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.        #
+################################################################################
+
+# STL IMPORT
 from abc import ABC, abstractmethod
 from typing import Any, Union
-import importlib
 
+# LIBRARY IMPORT
 import pygame as pg
-from pygame import Color, Rect, Surface
-from pygame.constants import KEYUP, K_SPACE, K_h, K_j, K_q, K_w
+from pygame import Rect, Surface
 from pygame.event import Event
 from pygame_gui.ui_manager import UIManager
+
+# LOCAL IMPORT
+from constants import *
+from game import LevelManager
+from view.menu import Sidemenu
 import assets
 from beans.io import IOM
 from beans.types import SingletonMeta
-
-from constants import *
-from game import Level, LevelManager
-from view.menu import Sidemenu
-
 
 
 class ISceneInterface(ABC):
@@ -32,24 +50,16 @@ class ISceneInterface(ABC):
     raise NotImplementedError()
 
 
-## class SceneFactory(ABC):
-##
-##   @staticmethod
-##   def create(classname: str, args: list) -> ISceneInterface:
-##     Class = getattr(importlib.import_module("view.scene"), classname)
-##     return Class(*args)
-
-
 class SceneManager(metaclass=SingletonMeta):
 
   _cur: ISceneInterface
 
   def __init__(self) -> None:
     self._cur = WelcomeScene()
-  
+
   def setScene(self, newScene: ISceneInterface) -> None:
     self._cur = newScene
-  
+
   def getScene(self) -> ISceneInterface:
     return self._cur
 
@@ -100,7 +110,7 @@ class GameScene(ISceneInterface):
 
   def render(self, screen: Surface) -> None:
     level = LevelManager().getCurrentLevel()
-    
+
     screen.blit(self.backgroundSurf, (0, 0))
     self.uiManager.draw_ui(screen)
     windowDimension = pg.display.get_surface().get_size()
@@ -113,16 +123,8 @@ class GameScene(ISceneInterface):
     self.uiManager.process_events(event)
     level.proccessEvent(event)
 
-    # if event.type == KEYUP:
-    #   if event.key == K_w:
-    #     level.karelMove()
-    #   elif event.key == K_q:
-    #     level.karelTurnLeft()
-    #   elif event.key == K_h:
-    #     level.karelPickBeeper()
-    #   elif event.key == K_j:
-    #     level.karelPutBeeper()
-
   def update(self, **kwargs) -> Union[Any, None]:
     self.uiManager.update(kwargs["time_delta"])
-    LevelManager().getCurrentLevel().update(self.sidemenu.speedSlider.current_value)
+    LevelManager().getCurrentLevel().update(
+        self.sidemenu.speedSlider.current_value
+    )

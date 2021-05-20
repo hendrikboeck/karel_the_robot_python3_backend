@@ -1,13 +1,31 @@
-import pygame as pg
-from abc import ABC, abstractmethod
-from typing import Iterable
-from assets.color import HexColor
-from beans.types import Vector2f
+################################################################################
+# karel_the_robot_python3_backend                                              #
+# Copyright (C) 2021  Hendrik Boeck <hendrikboeck.dev@protonmail.com>          #
+#                                                                              #
+# This program is free software: you can redistribute it and/or modify         #
+# it under the terms of the GNU General Public License as published by         #
+# the Free Software Foundation, either version 3 of the License, or            #
+# (at your option) any later version.                                          #
+#                                                                              #
+# This program is distributed in the hope that it will be useful,              #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of               #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                #
+# GNU General Public License for more details.                                 #
+#                                                                              #
+# You should have received a copy of the GNU General Public License            #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.        #
+################################################################################
 
-from constants import GAME_FONT, WINDOW_DIMENSIONS, WINDOW_TOP_RIGHT
+# STL IMPORT
+from abc import ABC, abstractmethod
+
+# LIBRARY IMPORT
+import pygame as pg
+
+# LOCAL IMPORT
+from constants import GAME_FONT, WINDOW_TOP_RIGHT
 import assets
-from beans.io import IOM
-from copy import copy
+from assets.color import HexColor
 
 
 class Overlay(pg.Surface, ABC):

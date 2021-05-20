@@ -1,8 +1,26 @@
-# LIBRARY-IMPORT
+################################################################################
+# karel_the_robot_python3_backend                                              #
+# Copyright (C) 2021  Hendrik Boeck <hendrikboeck.dev@protonmail.com>          #
+#                                                                              #
+# This program is free software: you can redistribute it and/or modify         #
+# it under the terms of the GNU General Public License as published by         #
+# the Free Software Foundation, either version 3 of the License, or            #
+# (at your option) any later version.                                          #
+#                                                                              #
+# This program is distributed in the hope that it will be useful,              #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of               #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                #
+# GNU General Public License for more details.                                 #
+#                                                                              #
+# You should have received a copy of the GNU General Public License            #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.        #
+################################################################################
+
+# LIBRARY IMPORT
 import yaml
 import pygame as pg
 
-# LOCAL-IMPORT
+# LOCAL IMPORT
 from beans.sys import EXIT_FAILURE, Exit
 from beans.types import SingletonMeta
 from beans.io import IOM, createIOManagerConfigFromDict, CLIColors
@@ -10,7 +28,7 @@ import assets
 from constants import *
 from view.menu import ClickButtonMenu
 from view.overlay import FPSOverlay
-from view.scene import GameScene, SceneManager, WelcomeScene
+from view.scene import SceneManager
 from view.window import DebugWindow, DebugInformationDict
 from server import ServerThread, SocketAddr
 
