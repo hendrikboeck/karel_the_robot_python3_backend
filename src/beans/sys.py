@@ -19,6 +19,7 @@
 # STL IMPORT
 from typing import NoReturn
 import sys
+import os
 
 # LOCAL IMPORT
 from .io import IOM
@@ -27,10 +28,13 @@ EXIT_SUCCESS = 0
 EXIT_FAILURE = 1
 
 
-def Exit(e_code: int = EXIT_SUCCESS) -> NoReturn:
+def exit(e_code: int = EXIT_SUCCESS) -> NoReturn:
   sys.exit(e_code)
 
 
-def ErrorExit(text: str = None, e_code: int = EXIT_FAILURE) -> NoReturn:
+def errorExit(text: str = None, e_code: int = EXIT_FAILURE) -> NoReturn:
   if text is not None: IOM.error(text)
-  Exit(e_code)
+  exit(e_code)
+
+def fileExists(path: str) -> bool:
+  return os.path.exists(path)

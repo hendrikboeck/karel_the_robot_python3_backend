@@ -4,7 +4,7 @@
 <map size="(10, 10)" speed="1.00">
 
   <!-- METADATA -->
-  <metadata name="FindBeeperCenter3" version="2020-12-02" author="Hendrik Boeck" />
+  <metadata name="FindBeeperCenter3" version="1.0" author="Unkown" />
 
   <!-- MAP OBJECTS -->
   <karel position="(1, 1)" orientation="EAST" beeperbag="inf" />

@@ -1,7 +1,12 @@
-iom_show_debug_messages: true
-iom_show_caller_information: false
-iom_show_label_out_messages: true
+framerate: 144
+socket: "tcp/14480"
 
 pygame_show_warnings: false
 
-socket: "tcp/14480"
+iomanager:
+  show_debug_messages: true
+  show_caller_information: false
+  show_label_out_messages: true
+  debug_label_color: CYAN
+  error_label_color: RED
+  out_label_color: DGRAY

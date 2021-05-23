@@ -17,11 +17,12 @@
 ################################################################################
 
 # LIBRARY IMPORT
+from typing import Any, Dict
 import yaml
 import pygame as pg
 
 # LOCAL IMPORT
-from beans.sys import EXIT_FAILURE, Exit
+from beans.sys import EXIT_FAILURE, errorExit, exit, fileExists
 from beans.types import SingletonMeta
 from beans.io import IOM, createIOManagerConfigFromDict, CLIColors
 import assets
@@ -33,21 +34,23 @@ from view.window import DebugWindow, DebugInformationDict
 from server import ServerThread, SocketAddr
 
 
-##
-# Wrapper for the 'main' function
-#
 class App():
+  """
+  Wrapper for the 'main' function
+  """
 
-  ##
-  # The 'main' fuction of the program.
-  #
-  # @param  args  list of arguments from the commandline
-  # @return       None
-  #
   @staticmethod
   def main(args: list) -> None:
-    conf = Configurator(DEFAULTPATH_CONFIG)
-    if conf.socketAddr.isBound(): Exit(EXIT_FAILURE)
+    """
+    The 'main' fuction of the program.
+   
+    @param  args  list of arguments from the commandline
+    @return       None
+    """
+    conf = Configurator()
+    if conf.socketAddr.isBound(): exit(EXIT_FAILURE)
+
+    IOM.load(conf.iomConf)
     dinfo = DebugInformationDict()
 
     pg.init()
@@ -56,7 +59,7 @@ class App():
     serverThread = ServerThread(conf.socketProto, conf.socketAddr.port)
     serverThread.start()
 
-    screen = pg.display.set_mode(tuple(WINDOW_DIMENSIONS))
+    screen = pg.display.set_mode(tuple(WINDOW_DIMENSIONS), pg.DOUBLEBUF)
     pg.display.set_caption(WINDOW_TITLE)
     dinfo.update(WINDOW_SIZE=WINDOW_DIMENSIONS)
     IOM.debug(f"created window with dimensions {WINDOW_DIMENSIONS}")
@@ -66,8 +69,8 @@ class App():
 
     menuManager = assets.load.uimanager("theme/ClickButtonMenu.json")
     dWindow = DebugWindow(menuManager, True)
-    dWindow.loadView("view/default_view.xml")
-    rmenu = ClickButtonMenu(menuManager, "view/rmenu.xml")
+    dWindow.loadView("view/DebugWindow_default.xml")
+    rmenu = ClickButtonMenu(menuManager, "view/ClickButtonMenu.xml")
 
     fpsoverlay = FPSOverlay(visible=False)
 
@@ -80,7 +83,7 @@ class App():
 
     while (gameloop):
       scene = SceneManager().getScene()
-      frametime = clock.tick(FRAME_RATE)
+      frametime = clock.tick(conf.framerate)
       fps = clock.get_fps()
 
       for event in pg.event.get():
@@ -130,43 +133,34 @@ class Configurator(metaclass=SingletonMeta):
 
   socketProto: str
   socketAddr: SocketAddr
-  undefined: dict
+  iomConf: Dict[str, Any]
+  framerate: int
 
-  ##
-  # constructor
-  #
-  # @param  filepath    path to configuration-file (.yaml)
-  #
-  def __init__(self, filepath: str) -> None:
-    self.fetch(filepath)
+  def __init__(self) -> None:
+    filepath = CONFIGPATH + "yaml"
+    if not fileExists(CONFIGPATH + "yaml"):
+      filepath = CONFIGPATH + "yml"
 
-  ##
-  # Fetches the data from a .yml/.yaml configuration file and store/set all variables/settings
-  # found.  Not mapped values, will be stored in 'self.undefined'
-  #
-  # @param  filepath    path to configuration-file (.yaml)
-  #
-  def fetch(self, filepath: str) -> None:
-    stream = open(filepath, 'r')
-    conf = yaml.load(stream, Loader=yaml.FullLoader)
+    try:
+      with open(filepath, 'r') as stream:
+        conf = yaml.load(stream, Loader=yaml.FullLoader)
 
-    # IOM-Configuration
-    iomConf = {}
-    for key, value in conf.items():
-      if key.startswith("iom_"):
-        iomConf[key[4:]] = value
-    iomConf = createIOManagerConfigFromDict(iomConf)
-    iomConf["DEBUG_LABEL_COLOR"] = CLIColors.CYAN
-    iomConf["ERROR_LABEL_COLOR"] = CLIColors.RED
-    iomConf["OUT_LABEL_COLOR"] = CLIColors.DGRAY
-    IOM._load(iomConf)
+        # FRAMERATE
+        self.framerate = int(conf.get("framerate", FRAMERATE))
 
-    # PYGAME_WARNINGS
-    if not conf.get("pygame_show_warnings", False):
-      import warnings
-      warnings.filterwarnings("ignore")
+        # IOM-Configuration
+        iomConf = conf.get("iomanager", {})
+        iomConf = createIOManagerConfigFromDict(iomConf)
+        self.iomConf = iomConf
 
-    # OTHER-Configuration
-    socketKey = conf.pop("socket", "tcp/1234")
-    (self.socketProto, socketPort) = tuple(socketKey.split("/"))
-    self.socketAddr = SocketAddr("localhost", int(socketPort))
+        # PYGAME_WARNINGS
+        if not conf.get("pygame_show_warnings", False):
+          import warnings
+          warnings.filterwarnings("ignore")
+
+        # SOCKET
+        socketKey = conf.pop("socket", "tcp/1234")
+        (self.socketProto, socketPort) = tuple(socketKey.split("/"))
+        self.socketAddr = SocketAddr("localhost", int(socketPort)) 
+    except FileNotFoundError as err:
+      errorExit(str(err))

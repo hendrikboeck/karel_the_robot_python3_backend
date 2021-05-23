@@ -73,6 +73,12 @@ class Command(ABC):
 
 
 class KarelMoveCommand(Command):
+  """
+  is a Karel-Action. Makes Karel move 1 tile forward in the direction he is
+  looking at. If Karel can not execute move a the name of Error is returned.
+
+  @extends  Command
+  """
 
   def execute(self) -> CommandResult:
     try:
@@ -86,6 +92,12 @@ class KarelMoveCommand(Command):
 
 
 class KarelTurnLeftCommand(Command):
+  """
+  is a Karel-Action. Makes Karel turn left. If Karel can not execute turnLeft a
+  the name of Error is returned.
+
+  @extends  Command
+  """
 
   def execute(self) -> CommandResult:
     try:
@@ -99,6 +111,12 @@ class KarelTurnLeftCommand(Command):
 
 
 class KarelPickBeeperCommand(Command):
+  """
+  is a Karel-Action. Makes Karel pick a beeper from current position. If Karel
+  can not execute pickBeeper the name of Error is returned.
+
+  @extends  Command
+  """
 
   def execute(self) -> CommandResult:
     try:
@@ -112,6 +130,12 @@ class KarelPickBeeperCommand(Command):
 
 
 class KarelPutBeeperCommand(Command):
+  """
+  is a Karel-Action. Makes Karel put a beeper at current position. If Karel can
+  not execute putBeeper the name of Error is returned.
+
+  @extends  Command
+  """
 
   def execute(self) -> CommandResult:
     try:
@@ -125,6 +149,11 @@ class KarelPutBeeperCommand(Command):
 
 
 class KarelFrontIsClearCommand(Command):
+  """
+  is a Karel-Question. Returns wether there is a wall in front of Karel.
+
+  @extends  Command
+  """
 
   def execute(self) -> CommandResult:
     try:
@@ -137,6 +166,11 @@ class KarelFrontIsClearCommand(Command):
 
 
 class KarelRightIsClearCommand(Command):
+  """
+  is a Karel-Question. Returns wether there is a wall to the right of Karel.
+
+  @extends  Command
+  """
 
   def execute(self) -> CommandResult:
     try:
@@ -149,6 +183,11 @@ class KarelRightIsClearCommand(Command):
 
 
 class KarelLeftIsClearCommand(Command):
+  """
+  is a Karel-Question. Returns wether there is a wall to the left of Karel.
+
+  @extends  Command
+  """
 
   def execute(self) -> CommandResult:
     try:
@@ -161,6 +200,12 @@ class KarelLeftIsClearCommand(Command):
 
 
 class KarelBeeperInBagCommand(Command):
+  """
+  is a Karel-Question. Returns wether Karel has at least one beeper left in his
+  bag.
+
+  @extends  Command
+  """
 
   def execute(self) -> CommandResult:
     try:
@@ -173,6 +218,12 @@ class KarelBeeperInBagCommand(Command):
 
 
 class KarelBeeperPresentCommand(Command):
+  """
+  is a Karel-Question. Returns wether at least one beeper is present on the
+  position Karel is at.
+
+  @extends  Command
+  """
 
   def execute(self) -> CommandResult:
     try:
@@ -185,6 +236,11 @@ class KarelBeeperPresentCommand(Command):
 
 
 class KarelFacingNorthCommand(Command):
+  """
+  is a Karel-Question. Returns wether Karel is currently facing north.
+
+  @extends  Command
+  """
 
   def execute(self) -> CommandResult:
     try:
@@ -197,6 +253,11 @@ class KarelFacingNorthCommand(Command):
 
 
 class KarelFacingEastCommand(Command):
+  """
+  is a Karel-Question. Returns wether Karel is currently facing east.
+
+  @extends  Command
+  """
 
   def execute(self) -> CommandResult:
     try:
@@ -209,6 +270,11 @@ class KarelFacingEastCommand(Command):
 
 
 class KarelFacingSouthCommand(Command):
+  """
+  is a Karel-Question. Returns wether Karel is currently facing south.
+
+  @extends  Command
+  """
 
   def execute(self) -> CommandResult:
     try:
@@ -221,6 +287,11 @@ class KarelFacingSouthCommand(Command):
 
 
 class KarelFacingWestCommand(Command):
+  """
+  is a Karel-Question. Returns wether Karel is currently facing west.
+
+  @extends  Command
+  """
 
   def execute(self) -> CommandResult:
     try:
@@ -233,6 +304,12 @@ class KarelFacingWestCommand(Command):
 
 
 class GameLoadWorldCommand(Command):
+  """
+  loads a mapname.xml file as World into the game. (mapname.xml can eighter be
+  loaded from local file in assets/map/ or from a embedded maps in the exe).
+
+  @extends  Command
+  """
 
   def execute(self) -> CommandResult:
     try:
@@ -247,20 +324,26 @@ class GameLoadWorldCommand(Command):
 
 
 class GameCloseCommand(Command):
+  """
+  terminates command sequence for backend. Has to be called as last command in
+  program.
+
+  @extends  Command
+  """
 
   def execute(self) -> CommandResult:
     LevelManager().getCurrentLevel()._changeLevelState(LevelState.FINISHED)
     return CommandResult(self.id_, None)
 
 
-##
-# CommandFactory
-#
-# @extends beans.types.SingletonMeta
-#
-# @param  COMMAND_TABLE   Map of API-names to Command-child-classes
-#
 class CommandFactory(metaclass=SingletonMeta):
+  """
+  Wrapper for 
+
+  @extends  SingletonMeta
+
+  @param  COMMAND_TABLE   Map of API-names to Command-child-classes
+  """
 
   COMMAND_TABLE: Dict[str, Command] = {
       "move": KarelMoveCommand,
@@ -277,10 +360,19 @@ class CommandFactory(metaclass=SingletonMeta):
       "facingSouth": KarelFacingSouthCommand,
       "facingWest": KarelFacingWestCommand,
       "loadWorld": GameLoadWorldCommand,
-      "close": GameCloseCommand
+      "EOS": GameCloseCommand
   }
 
   def create(
       self, functionName: str, id_: int, args: Dict[str, Any]
   ) -> Command:
+    """
+    creates a Command from functionName
+
+    @param  functionName  name of function from API
+    @param  id_           numeric id of command (set by frontend, for 
+      identification of reply)
+    @param  args          arguments of command
+    @return               corresporing Command
+    """
     return self.COMMAND_TABLE[functionName](id_, args)

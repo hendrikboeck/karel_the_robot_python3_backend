@@ -21,8 +21,11 @@ from sys import stdout, stderr
 from typing import Any, Dict, NamedTuple, TextIO
 import inspect
 
+# LOCAL IMPORT
+from beans.types import EnumLike
 
-class CLIFormat(object):
+
+class CLIFormat(EnumLike):
   ENDF = "\033[0m"
   BOLD = "\033[1m"
   RST_BOLD = "\033[21m"
@@ -38,7 +41,7 @@ class CLIFormat(object):
   RST_HIDDN = "\033[28m"
 
 
-class CLIColors(object):
+class CLIColors(EnumLike):
   DEFAULT = "\033[39m"
   BLACK = "\033[30m"
   RED = "\033[31m"
@@ -56,6 +59,10 @@ class CLIColors(object):
   LMAGENTA = "\033[95m"
   LCYAN = "\033[96m"
   WHITE = "\033[97m"
+  NULL = ""
+
+  def getFromStr(colorName: str) -> str:
+    return CLIColors.__dict__.get(colorName, CLIColors.NULL)
 
 
 class _IOTuple(NamedTuple):
@@ -70,6 +77,14 @@ class _IOTuple(NamedTuple):
 # can get.
 #
 class IOManager():
+  """
+  The IOManager defines a interface for human-interaction.  And serializes this
+  interface for easy access and manipulation and control over amount of 
+  information which the user/developer can get.
+
+  @param  _streams  _IOTuple of all streams
+  @param  _labelColors  tuple of colors corresponding to 
+  """
 
   _streams: _IOTuple
   _labelColors: _IOTuple
@@ -92,23 +107,25 @@ class IOManager():
     self.SHOW_LABEL_OUT_MESSAGES = None
     self.SHOW_DEBUG_MESSAGES = None
 
-    self._load(conf)
+    self.load(conf)
 
   ##
-  # TODO: _load-descrition
+  # TODO: load-descrition
   #
   # @param  conf  Dictionary, which describes a IOManager and enables the specification over a
   #               global configuration-file, which specifies the Flags.  The default Flags can
   #               be viewed by calling the Function 'createIOManagerDefaultConfig'.
   #
-  def _load(self, conf: Dict[str, Any]) -> None:
+  def load(self, conf: Dict[str, Any]) -> None:
     self._streams = _IOTuple(
-        out=conf["OUT_STREAM"], debug=conf["DEBUG_STREAM"], error=conf["ERROR_STREAM"]
+        out=conf["OUT_STREAM"],
+        debug=conf["DEBUG_STREAM"],
+        error=conf["ERROR_STREAM"]
     )
     self._labelColors = _IOTuple(
-        out=conf["OUT_LABEL_COLOR"],
-        debug=conf["DEBUG_LABEL_COLOR"],
-        error=conf["ERROR_LABEL_COLOR"]
+        out=CLIColors.getFromStr(conf["OUT_LABEL_COLOR"]),
+        debug=CLIColors.getFromStr(conf["DEBUG_LABEL_COLOR"]),
+        error=CLIColors.getFromStr(conf["ERROR_LABEL_COLOR"])
     )
 
     self.SHOW_CALLER_INFORMATION = bool(conf["SHOW_CALLER_INFORMATION"])
@@ -127,7 +144,9 @@ class IOManager():
       caller = ""
       try:
         # adds the class of the function, if memberfunction ('Class.')
-        caller += str(inspect.stack()[2].frame.f_locals['self'].__class__.__name__) + "."
+        caller += str(
+            inspect.stack()[2].frame.f_locals['self'].__class__.__name__
+        ) + "."
       except:
         pass
       # adds the function name ('function')
@@ -141,7 +160,9 @@ class IOManager():
   # @param  labelColor    color of the label as str (e.g. '\033[97m')
   # @param  stream        stream the label should be print to
   #
-  def _printLabel(self, streamLabel: str, labelColor: str, stream: TextIO) -> None:
+  def _printLabel(
+      self, streamLabel: str, labelColor: str, stream: TextIO
+  ) -> None:
     if labelColor != "":
       label = f"{CLIFormat.BOLD}{labelColor}{streamLabel} |{CLIFormat.ENDF} "
     else:

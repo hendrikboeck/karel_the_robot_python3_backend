@@ -4,7 +4,7 @@
 <map size="(15, 7)" speed="1.0">
 
   <!-- METADATA -->
-  <metadata name="DiamondMining2" version="2020-12-02" author="Hendrik Boeck" />
+  <metadata name="DiamondMining2" version="1.0" author="Unkown" />
 
   <!-- MAP OBJECTS -->
   <karel position="(1, 5)" orientation="EAST" beeperbag="inf" />

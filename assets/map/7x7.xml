@@ -4,7 +4,7 @@
 <map size="(7, 7)" speed="0.75">
 
   <!-- METADATA -->
-  <metadata name="7x7" version="1.0" author="" />
+  <metadata name="7x7" version="1.0" author="Unkown" />
 
   <!-- MAP OBJECTS -->
   <karel position="(1, 1)" orientation="EAST" beeperbag="inf" />

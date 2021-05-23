@@ -4,7 +4,7 @@
 <map size="(10, 7)" speed="1.00">
 
   <!-- METADATA -->
-  <metadata name="TestRoom" version="2020-12-02" author="Hendrik Boeck" />
+  <metadata name="TestRoom" version="1.0" author="Hendrik Boeck" />
 
   <!-- MAP OBJECTS -->
   <karel position="(1, 2)" orientation="SOUTH" beeperbag="inf" />

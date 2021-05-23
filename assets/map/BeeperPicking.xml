@@ -4,7 +4,7 @@
 <map size="(6, 4)" speed="1.00">
 
   <!-- METADATA -->
-  <metadata name="BeeperPicking" version="v1.0" author="" />
+  <metadata name="BeeperPicking" version="v1.0" author="Unkown" />
 
   <!-- MAP OBJECTS -->
   <karel position="(1, 1)" orientation="EAST" beeperbag="inf" />

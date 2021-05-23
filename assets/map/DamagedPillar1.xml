@@ -4,7 +4,7 @@
 <map size="(13, 9)" speed="0.5">
 
   <!-- METADATA -->
-  <metadata name="DamagedPillar1" version="2020-11-22" author="Hendrik Boeck" />
+  <metadata name="DamagedPillar1" version="1.0" author="Unkown" />
 
   <!-- MAP OBJECTS -->
   <karel position="(1, 1)" orientation="EAST" beeperbag="inf" />
