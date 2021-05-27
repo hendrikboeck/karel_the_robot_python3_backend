@@ -18,11 +18,10 @@
 
 # STL IMPORT
 import os
+import sys
 from io import BytesIO
 from xml.etree import cElementTree as ElementTree
 from xml.etree.ElementTree import Element
-import sys
-import functools
 
 # LIBRARY IMPORT
 import pygame
@@ -31,54 +30,73 @@ from pygame.font import Font
 from pygame_gui.ui_manager import UIManager
 
 # LOCAL IMPORT
-from constants import FUNC_CACHE_SIZE, ASSETS_FOLDER
-
-# for packaging assets into .exe
-def __resource_path(relativePath: str) -> str:
-  try:
-    basePath = sys._MEIPASS
-  except Exception:
-    basePath = os.path.abspath(".")
-  return os.path.join(basePath, relativePath)
+from constants import ASSETS_FOLDER, WINDOW_DIMENSIONS
+from pyadditions.sys import fileExists
 
 
-def __get_assetpath(relativePath: str) -> str:
-  try:
-    localPath = os.path.join(ASSETS_FOLDER, relativePath)
-    with open(localPath) as f:
-      pass
+def _getResourcePath(relativePath: str) -> str:
+  """
+  Returns a relative path for resource loading. If app is run as executable the
+  resources will be loaded from exe. When run as python, local files will be 
+  used
+
+  @param  relativePath  relative path in ASSETS_FOLDER
+  @return               absolute path in pwd
+  """
+  localPath = os.path.join(ASSETS_FOLDER, relativePath)
+  if fileExists(localPath):
     return localPath
-  except IOError:
-    return os.path.join(__resource_path(ASSETS_FOLDER), relativePath)
+  else:
+    return os.path.join(sys._MEIPASS, ASSETS_FOLDER, relativePath)
 
 
-# @functools.lru_cache(maxsize=FUNC_CACHE_SIZE)
-# TODO: pygame.image.load already cached? -> weird artifacts
 def image(filepath: str) -> Surface:
-  filepath = __get_assetpath(filepath)
+  """
+  Loads image from ASSETS_FOLDER.
+
+  @param  filepath  filepath to image in ASSETS_FOLDER
+  @return           pg.Surface of image
+  """
+  filepath = _getResourcePath(filepath)
   return pygame.image.load(filepath).convert_alpha()
 
 
-# @functools.lru_cache(maxsize=FUNC_CACHE_SIZE)
-# TODO: pygame.image.load already cached? -> weird artifacts
 def binaryImage(bin_: bytes) -> Surface:
+  """
+  Loads image from bytes-array.
+
+  @param  bin_  image as bytes-array
+  @return       pg.Surface of binary-image
+  """
   return pygame.image.load(BytesIO(bin_)).convert_alpha()
 
 
-@functools.lru_cache(maxsize=FUNC_CACHE_SIZE)
-def font(name: str, size: int) -> Font:
-  filepath = __get_assetpath(name)
+def font(filepath: str, size: int) -> Font:
+  """
+  Loads font from assets.
+
+  @param  filepath  filepath to font in ASSETS_FOLDER
+  @param  size      fontsize
+  @return           pg.Font of font
+  """
+  filepath = _getResourcePath(filepath)
   return Font(filepath, size)
 
 
-def __xmlnode_to_tuple(node: Element) -> tuple:
+def _xmlnodeToTuple(node: Element) -> tuple:
+  """
+  Converts xmlnode to tuple.
+
+  @param  node  xmlnode
+  @return       xmlnode as tuple
+  """
   nodeData = None
 
   for subNode in node:
     nodeData = nodeData or {}
-    (tag, items) = __xmlnode_to_tuple(subNode)
+    (tag, items) = _xmlnodeToTuple(subNode)
     if nodeData.get(tag):
-      if type(nodeData[tag]) == list:
+      if isinstance(nodeData[tag], list):
         nodeData[tag].append(items)
       else:
         nodeData[tag] = [nodeData[tag], items]
@@ -93,22 +111,38 @@ def __xmlnode_to_tuple(node: Element) -> tuple:
   return (node.tag, nodeData)
 
 
-# @functools.lru_cache(maxsize=FUNC_CACHE_SIZE)
 def xml(filepath: str) -> dict:
-  tree = ElementTree.parse(__get_assetpath(filepath))
-  (key, value) = __xmlnode_to_tuple(tree.getroot())
+  """
+  Loads .xml-file from assets.
+
+  @param  filepath  filepath to .xml-file in ASSETS_FOLDER
+  @return           xml as dict
+  """
+  tree = ElementTree.parse(_getResourcePath(filepath))
+  (key, value) = _xmlnodeToTuple(tree.getroot())
 
   if type(value) == dict: return value
   else: return {key: value}
 
 
 def xmls(data: str) -> dict:
-  (key, value) = __xmlnode_to_tuple(ElementTree.fromstring(data))
+  """
+  Loads xml from string.
+
+  @param  data  xml as string
+  @return       xml as dict
+  """
+  (key, value) = _xmlnodeToTuple(ElementTree.fromstring(data))
   return {key: value}
 
 
-def uimanager(theme: str) -> UIManager:
+def uimanager(themeFilepath: str) -> UIManager:
+  """
+  Loads a uimanager with the specified theme from ASSETS_FOLDER.
+
+  @param  themeFilepath  filepath to theme.json for uimanager
+  @return                uimanager with theme
+  """
   return UIManager(
-      pygame.display.get_surface().get_size(),
-      theme_path=__get_assetpath(theme)
+      tuple(WINDOW_DIMENSIONS), theme_path=_getResourcePath(themeFilepath)
   )

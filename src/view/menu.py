@@ -27,20 +27,19 @@ from pygame_gui.elements import UIPanel, UIButton, UIHorizontalSlider
 
 # LOCAL IMPORT
 import assets
-from beans.io import IOM
-from beans.types import Vector2f
-from constants import *
+from pyadditions.io import IOM
+from pyadditions.types import Vector2f, promiseList
+from constants import WINDOW_DIMENSIONS, WINDOW_TOP_LEFT, GAME_START_EVENT, GAME_FINISHED_EVENT
 from .elements import GLabel
 
 
-##
-# Dropdown-style menu that gets shown on Rightclick.
-#
-# @param  uim         UIManager of the class
-# @param  menuitems   ordered dict of menuitems
-# @param  dim         ordered dict of menuitems
-#
 class ClickButtonMenu(UIPanel):
+  """
+  Dropdown-style menu that gets shown on Rightclick.
+ 
+  @param  menuitems   ordered dict of menuitems
+  @param  dim         ordered dict of menuitems
+  """
 
   BUTTON_PADDING = Vector2f(15, 5)
 
@@ -59,8 +58,7 @@ class ClickButtonMenu(UIPanel):
     self.menuitems = OrderedDict()
 
     if assetsPath:
-      items = assets.load.xml(assetsPath)["item"]
-      if type(items) != list: items = [items]
+      items = promiseList(assets.load.xml(assetsPath)["item"])
       for i in items:
         self.addListItem(i["key"], i["text"])
 
@@ -104,7 +102,8 @@ class ClickButtonMenu(UIPanel):
 
     # create button-size
     minButtonSize = Vector2f(
-        labelDim.x + 2 * self.BUTTON_PADDING.x, labelDim.y + 2 * self.BUTTON_PADDING.y
+        labelDim.x + 2 * self.BUTTON_PADDING.x,
+        labelDim.y + 2 * self.BUTTON_PADDING.y
     )
 
     # update width for all buttons in menu
@@ -146,12 +145,16 @@ class Sidemenu(UIPanel):
     if width < 1:
       width *= WINDOW_DIMENSIONS.x
     super().__init__(
-        relative_rect=pg.Rect(tuple(WINDOW_TOP_LEFT), (width, WINDOW_DIMENSIONS.y)),
+        relative_rect=pg.Rect(
+            tuple(WINDOW_TOP_LEFT), (width, WINDOW_DIMENSIONS.y)
+        ),
         starting_layer_height=0,
         manager=manager
     )
     containerRect = pg.Rect(0, 0, 200, 70)
-    containerRect.center = (self.relative_rect.width * 0.5, self.relative_rect.height * 0.35)
+    containerRect.center = (
+        self.relative_rect.width * 0.5, self.relative_rect.height * 0.35
+    )
     self._container = UIContainer(
         relative_rect=containerRect,
         manager=self.ui_manager,
@@ -171,7 +174,8 @@ class Sidemenu(UIPanel):
     self.speedSlider = UIHorizontalSlider(
         relative_rect=pg.Rect(
             padding, 2*padding + self.startBtn.relative_rect.height,
-            0.7 * (containerRect.width - 2*padding), (containerRect.height - 3*padding) / 2
+            0.7 * (containerRect.width - 2*padding),
+            (containerRect.height - 3*padding) / 2
         ),
         start_value=1.0,
         value_range=(0.5, 15.0),
@@ -182,7 +186,8 @@ class Sidemenu(UIPanel):
         relative_rect=pg.Rect(
             padding + self.speedSlider.relative_rect.width,
             2*padding + self.startBtn.relative_rect.height,
-            containerRect.width - 2*padding - self.speedSlider.relative_rect.width,
+            containerRect.width - 2*padding -
+            self.speedSlider.relative_rect.width,
             (containerRect.height - 3*padding) / 2
         ),
         text=f"{self.speedSlider.current_value:.2f}",

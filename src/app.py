@@ -22,11 +22,11 @@ import yaml
 import pygame as pg
 
 # LOCAL IMPORT
-from beans.sys import EXIT_FAILURE, errorExit, exit, fileExists
-from beans.types import SingletonMeta
-from beans.io import IOM, createIOManagerConfigFromDict
+from pyadditions.sys import EXIT_FAILURE, errorExit, fileExists
+from pyadditions.types import SingletonMeta
+from pyadditions.io import IOM, createIOManagerConfigFromDict
 import assets
-from constants import *
+from constants import WINDOW_DIMENSIONS, WINDOW_TITLE, SCREEN_BACKGROUND_COLOR, CONFIGPATH, MAXFPS
 from view.menu import ClickButtonMenu
 from view.overlay import FPSOverlay
 from view.scene import SceneManager
@@ -35,9 +35,7 @@ from server import ServerThread, SocketAddr
 
 
 class App():
-  """
-  Wrapper for the 'main' function
-  """
+  """Wrapper for the 'main' function"""
 
   @staticmethod
   def main(args: list) -> None:
@@ -48,10 +46,11 @@ class App():
     @return       None
     """
     conf = Configurator()
-    if conf.socketAddr.isBound(): exit(EXIT_FAILURE)
+    if conf.socketAddr.isBound():
+      errorExit(f"SocketAddr {conf.socketAddr} is already taken", EXIT_FAILURE)
 
     IOM.load(conf.iomConf)
-    dinfo = DebugInformationDict()
+    debugInformationDict = DebugInformationDict()
 
     pg.init()
     IOM.debug("INITIALIZED pygame")
@@ -61,7 +60,7 @@ class App():
 
     screen = pg.display.set_mode(tuple(WINDOW_DIMENSIONS), pg.DOUBLEBUF)
     pg.display.set_caption(WINDOW_TITLE)
-    dinfo.update(WINDOW_SIZE=WINDOW_DIMENSIONS)
+    debugInformationDict.update(WINDOW_SIZE=WINDOW_DIMENSIONS)
     IOM.debug(f"created window with dimensions {WINDOW_DIMENSIONS}")
 
     background = pg.Surface(tuple(WINDOW_DIMENSIONS))
@@ -100,7 +99,7 @@ class App():
       fpsoverlay.update(fps)
 
       if dWindow.visible:
-        dinfo.update(FPS=int(fps), FRAMETIME=frametime)
+        debugInformationDict.update(FPS=int(fps), FRAMETIME=frametime)
 
       if rmenu.getListItem("fps").check_pressed():
         fpsoverlay.toggle()
@@ -123,13 +122,15 @@ class App():
     serverThread.join(0.1)
 
 
-##
-# Mapper for configuration file.  Used to store/set all configuration variables.
-#
-# @param  socket      socket configuration for server
-# @param  undefined   dict of unmapped configurations
-#
 class Configurator(metaclass=SingletonMeta):
+  """
+  Mapper for configuration file. Used to store/set all configuration variables.
+
+  @param  socketProto   socket protocol as str
+  @param  socketAddr    socket address as SocketAddr
+  @param  iomConf       configuration for iomanager
+  @param  maxfps        maxfps of game
+  """
 
   socketProto: str
   socketAddr: SocketAddr
@@ -143,7 +144,7 @@ class Configurator(metaclass=SingletonMeta):
 
     try:
       with open(filepath, 'r') as stream:
-        conf = yaml.load(stream, Loader=yaml.FullLoader)
+        conf = yaml.safe_load(stream)
 
         # MAXFPS
         self.maxfps = int(conf.get("maxfps", MAXFPS))
@@ -161,6 +162,6 @@ class Configurator(metaclass=SingletonMeta):
         # SOCKET
         socketKey = conf.pop("socket", "tcp/1234")
         (self.socketProto, socketPort) = tuple(socketKey.split("/"))
-        self.socketAddr = SocketAddr("localhost", int(socketPort)) 
+        self.socketAddr = SocketAddr("localhost", int(socketPort))
     except FileNotFoundError as err:
       errorExit(str(err))

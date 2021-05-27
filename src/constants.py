@@ -21,7 +21,7 @@ from pygame import USEREVENT
 from pygame.event import Event
 
 # LOCAL IMPORT
-from beans.types import Vector2f
+from pyadditions.types import Vector2f
 from assets.color import HexColor
 
 # Math

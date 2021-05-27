@@ -22,7 +22,7 @@ from typing import Any, Dict, NamedTuple, TextIO
 import inspect
 
 # LOCAL IMPORT
-from beans.types import EnumLike
+from pyadditions.types import EnumLike
 
 
 class CLIFormat(EnumLike):
@@ -78,7 +78,7 @@ class IOManager():
   information which the user/developer can get.
 
   @param  _streams            _IOTuple of all streams
-  @param  _labelColors        tuple of colors corresponding to 
+  @param  _labelColors        tuple of colors corresponding to
   @param  show_caller_info    
   @param  show_label_out_msgs
   @param  show_debug_msgs
@@ -95,8 +95,8 @@ class IOManager():
     """
     constructor
    
-    @param  conf  Dictionary, which describes a IOManager and enables the 
-        specification over a global configuration-file, which specifies the 
+    @param  conf  Dictionary, which describes a IOManager and enables the
+        specification over a global configuration-file, which specifies the
         Flags.  The default Flags can be viewed by calling the Function 
         'createIOManagerDefaultConfig'.
     """

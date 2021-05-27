@@ -20,13 +20,11 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, NamedTuple
 
-# LIBRARY-IMPORT
-import pygame as pg
-
 # LOCAL-IMPORT
-from beans.types import SingletonMeta, Vector2f, classname
+from pyadditions.types import SingletonMeta, classname
 from game import Level, LevelManager, LevelState
 from view.scene import GameScene, SceneManager
+from constants import WINDOW_DIMENSIONS
 
 
 class CommandResult(NamedTuple):
@@ -313,7 +311,7 @@ class GameLoadWorldCommand(Command):
 
   def execute(self) -> CommandResult:
     try:
-      bounds = Vector2f._make(pg.display.get_surface().get_size())
+      bounds = WINDOW_DIMENSIONS
       bounds.x -= 320
       bounds.y -= 20
       LevelManager().setCurrentLevel(Level(self.args["map"], bounds))

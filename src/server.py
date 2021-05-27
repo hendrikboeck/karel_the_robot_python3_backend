@@ -18,6 +18,7 @@
 
 # STL IMPORT
 from __future__ import annotations
+from abc import ABC
 import threading
 import errno
 from socket import error as SocketError
@@ -27,8 +28,8 @@ import atexit
 
 # LOCAL IMPORT
 import rpc
-from beans.types import Interface, SingletonMeta, interfacemethod
-from beans.io import IOM
+from pyadditions.types import Interface, NotInstanceable, interfacemethod
+from pyadditions.io import IOM
 from constants import UTF8, MAX_CONNECTIONS, UDP_MAX_PKG_SIZE, TCP_MAX_PKG_SIZE
 from view.window import DebugInformationDict
 
@@ -243,9 +244,10 @@ class TCPServerINET(IServerInterface):
       )
 
 
-class ServerFactory(metaclass=SingletonMeta):
+class ServerFactory(NotInstanceable):
 
-  def create(self, protocol: str, port: int) -> IServerInterface:
+  @staticmethod
+  def create(protocol: str, port: int) -> IServerInterface:
 
     if protocol == "tcp":
       return TCPServerINET(f"localhost:{port}")
@@ -262,11 +264,11 @@ class ServerThread(threading.Thread):
 
   def __init__(self, protocol: str, port: int) -> None:
     super().__init__(daemon=True)
-    self._server = ServerFactory().create(protocol, port)
+    self._server = ServerFactory.create(protocol, port)
 
   def run(self) -> None:
     self._server.start()
-    atexit.register(lambda: self._server.stop())
+    atexit.register(self._server.stop)
 
     running = True
     while running:

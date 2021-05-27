@@ -24,12 +24,12 @@ a = Analysis(['src/__main__.py'],
                ('assets/view/DebugWindow_default.xml', 'assets/view'),
                ('assets/view/ClickButtonMenu.xml', 'assets/view'),
                
-               # Linux
-               ('env/lib/python3.9/site-packages/pygame_gui/data/default_theme.json', 'pygame_gui/data'),
-               ('env/lib/python3.9/site-packages/pygame_gui/data/FiraCode-Bold.ttf', 'pygame_gui/data'),
-               ('env/lib/python3.9/site-packages/pygame_gui/data/FiraCode-Regular.ttf', 'pygame_gui/data'),
-               ('env/lib/python3.9/site-packages/pygame_gui/data/FiraMono-BoldItalic.ttf', 'pygame_gui/data'),
-               ('env/lib/python3.9/site-packages/pygame_gui/data/FiraMono-RegularItalic.ttf', 'pygame_gui/data'),
+               # Windows
+               ('env/Lib/site-packages/pygame_gui/data/default_theme.json', 'pygame_gui/data'),
+               ('env/Lib/site-packages/pygame_gui/data/FiraCode-Bold.ttf', 'pygame_gui/data'),
+               ('env/Lib/site-packages/pygame_gui/data/FiraCode-Regular.ttf', 'pygame_gui/data'),
+               ('env/Lib/site-packages/pygame_gui/data/FiraMono-BoldItalic.ttf', 'pygame_gui/data'),
+               ('env/Lib/site-packages/pygame_gui/data/FiraMono-RegularItalic.ttf', 'pygame_gui/data'),
               ],
              hiddenimports=[],
              hookspath=[],

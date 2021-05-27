@@ -27,7 +27,7 @@ from pygame_gui.ui_manager import UIManager
 
 # LOCAL IMPORT
 import assets
-from beans.types import Vector2f, SingletonMeta, promiseList
+from pyadditions.types import Vector2f, SingletonMeta, promiseList
 from .elements import GLabel
 
 

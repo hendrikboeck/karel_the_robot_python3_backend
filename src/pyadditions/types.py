@@ -46,11 +46,15 @@ InterfaceMeta = ABCMeta
 Interface = ABC
 interfacemethod = abstractmethod
 
+NotInstanceable = ABC
+
 
 class EnumLikeMeta(type):
 
   def __call__(cls, *args: List[Any], **kwargs: Dict[str, Any]) -> Any:
-    raise TypeError(f"{cls.__module__}.{cls.__qualname__} has no public constructor")
+    raise TypeError(
+        f"{cls.__module__}.{cls.__qualname__} has no public constructor"
+    )
 
 
 class EnumLike(metaclass=EnumLikeMeta):

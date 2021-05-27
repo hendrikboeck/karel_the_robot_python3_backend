@@ -20,14 +20,15 @@
 from __future__ import annotations
 from typing import Dict, Any, List, Tuple, Union, NamedTuple
 from time import sleep
+import ast
 
 # LIBRARY IMPORT
 from pygame import Surface, Rect, SRCALPHA
 import pygame as pg
 
 # LOCAL IMPORT
-from beans.io import IOM
-from beans.types import EnumLike, SingletonMeta, Vector2f, promiseList
+from pyadditions.io import IOM
+from pyadditions.types import EnumLike, SingletonMeta, Vector2f, promiseList
 import assets
 from assets.color import HexColor
 from constants import GAME_CONTINUE_EVENT, GAME_ERROR_EVENT, GAME_FONT, GAME_START_EVENT, INFINITY
@@ -46,7 +47,7 @@ def createMapConfigFromXML(xml_: Dict[str, Any]) -> Dict[str, Any]:
 
   conf["world"] = {}
 
-  conf["world"]["size"] = Vector2f(*eval(xml_["size"]))
+  conf["world"]["size"] = Vector2f(*ast.literal_eval(xml_["size"]))
   metadata = xml_.get("metadata", {})
   conf["world"]["metadata"] = {
       "name": metadata.get("name", "unkown"),
@@ -57,20 +58,20 @@ def createMapConfigFromXML(xml_: Dict[str, Any]) -> Dict[str, Any]:
 
   walls = promiseList(xml_.get("wall", []))
   for wall in walls:
-    wall["start"] = Vector2f(*eval(wall["start"]))
+    wall["start"] = Vector2f(*ast.literal_eval(wall["start"]))
     wall["length"] = abs(int(wall.get("length", "1")))
     wall["orientation"] = KarelOrientation.fromString(wall["orientation"])
   conf["world"]["walls"] = walls
 
   beepers = promiseList(xml_.get("beeper", []))
   for beeper in beepers:
-    beeper["position"] = Vector2f(*eval(beeper["position"]))
+    beeper["position"] = Vector2f(*ast.literal_eval(beeper["position"]))
     beeper["n"] = abs(int(float(beeper.get("n", "1"))))
   conf["world"]["beepers"] = beepers
 
   karel = xml_.get("karel", {})
   conf["karel"] = {}
-  conf["karel"]["position"] = Vector2f(*eval(karel.get("position", "(1, 1)")))
+  conf["karel"]["position"] = Vector2f(*ast.literal_eval(karel.get("position", "(1, 1)")))
   conf["karel"]["orientation"] = KarelOrientation.fromString(
       karel.get("orientation", "EAST")
   )
@@ -256,7 +257,6 @@ class Tile():
     """
     if self._beepers > 0:
       beeperSurf = assets.load.image("64x/beeper.png")
-      beeperRect = beeperSurf.get_rect()
       self.surf.blit(beeperSurf, (0, 0))
     if self._beepers > 1:
       beeperNumFont = assets.load.font(GAME_FONT, 14)

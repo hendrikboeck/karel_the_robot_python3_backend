@@ -27,12 +27,12 @@ from pygame.event import Event
 from pygame_gui.ui_manager import UIManager
 
 # LOCAL IMPORT
-from constants import *
+from constants import WINDOW_DIMENSIONS, WINDOW_CENTER, SCREEN_BACKGROUND_COLOR
 from game import LevelManager
 from view.menu import Sidemenu
 import assets
-from beans.io import IOM
-from beans.types import SingletonMeta
+from assets.color import HexColor
+from pyadditions.types import SingletonMeta
 
 
 class ISceneInterface(ABC):
@@ -106,15 +106,12 @@ class GameScene(ISceneInterface):
     self.uiManager = assets.load.uimanager("theme/Sidemenu.json")
     self.sidemenu = Sidemenu(self.uiManager, 300)
 
-    windowDimension = pg.display.get_surface().get_size()
-
   def render(self, screen: Surface) -> None:
     level = LevelManager().getCurrentLevel()
 
     screen.blit(self.backgroundSurf, (0, 0))
     self.uiManager.draw_ui(screen)
-    windowDimension = pg.display.get_surface().get_size()
-    level.rect.center = ((windowDimension[0] + 300) / 2, windowDimension[1] / 2)
+    level.rect.center = ((WINDOW_DIMENSIONS.x + 300) / 2, WINDOW_DIMENSIONS.y / 2)
     level.render(screen)
 
   def proccessEvent(self, event: Event) -> Union[Any, None]:

@@ -17,12 +17,10 @@
 ################################################################################
 
 # STL-IMPORT
-from typing import Any, Iterable, List, Union, Dict
-from abc import ABC, abstractmethod
+from typing import Union, Dict
 
 # LIBRARY-IMPORT
 import pygame as pg
-from pygame_gui import elements
 from pygame_gui.elements import UILabel
 from pygame_gui.core import ObjectID
 from pygame_gui.core.interfaces import IContainerLikeInterface, IUIManagerInterface

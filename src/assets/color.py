@@ -19,12 +19,13 @@
 # LIBRARY IMPORT
 from pygame import Color
 
+# LOCAL IMPORT
+from pyadditions.types import EnumLike
 
-def HexColor(code: str) -> Color:
-  return Color(code)
+HexColor = Color
 
 
-class Basics(object):
+class Basics(EnumLike):
   WHITE = HexColor("#ffffff")
   BLACK = HexColor("#000000")
   RED = HexColor("#ff0000")
