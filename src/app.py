@@ -24,7 +24,7 @@ import pygame as pg
 # LOCAL IMPORT
 from beans.sys import EXIT_FAILURE, errorExit, exit, fileExists
 from beans.types import SingletonMeta
-from beans.io import IOM, createIOManagerConfigFromDict, CLIColors
+from beans.io import IOM, createIOManagerConfigFromDict
 import assets
 from constants import *
 from view.menu import ClickButtonMenu
@@ -83,7 +83,7 @@ class App():
 
     while (gameloop):
       scene = SceneManager().getScene()
-      frametime = clock.tick(conf.framerate)
+      frametime = clock.tick(conf.maxfps)
       fps = clock.get_fps()
 
       for event in pg.event.get():
@@ -134,7 +134,7 @@ class Configurator(metaclass=SingletonMeta):
   socketProto: str
   socketAddr: SocketAddr
   iomConf: Dict[str, Any]
-  framerate: int
+  maxfps: int
 
   def __init__(self) -> None:
     filepath = CONFIGPATH + "yaml"
@@ -145,8 +145,8 @@ class Configurator(metaclass=SingletonMeta):
       with open(filepath, 'r') as stream:
         conf = yaml.load(stream, Loader=yaml.FullLoader)
 
-        # FRAMERATE
-        self.framerate = int(conf.get("framerate", FRAMERATE))
+        # MAXFPS
+        self.maxfps = int(conf.get("maxfps", MAXFPS))
 
         # IOM-Configuration
         iomConf = conf.get("iomanager", {})

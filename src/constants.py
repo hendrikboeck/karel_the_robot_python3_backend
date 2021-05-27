@@ -24,9 +24,6 @@ from pygame.event import Event
 from beans.types import Vector2f
 from assets.color import HexColor
 
-# PERFOMANCE
-FUNC_CACHE_SIZE = 8
-
 # Math
 INFINITY = float("inf")
 
@@ -58,7 +55,7 @@ GAME_FONT = "font/FiraCode-Regular.ttf"
 
 # SCREEN PROPERTIES
 WINDOW_TITLE = "Karel the robot - Server (x64)"
-FRAMERATE = 144
+MAXFPS = 144
 SCREEN_BACKGROUND_COLOR = HexColor("#dddddd")
 
 # CONFIG

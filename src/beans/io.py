@@ -71,52 +71,52 @@ class _IOTuple(NamedTuple):
   error: Any
 
 
-##
-# The IOManager defines a interface for human-interaction.  And serializes this interface for
-# easy access and manipulation and control over amount of information which the user/developer
-# can get.
-#
 class IOManager():
   """
   The IOManager defines a interface for human-interaction.  And serializes this
   interface for easy access and manipulation and control over amount of 
   information which the user/developer can get.
 
-  @param  _streams  _IOTuple of all streams
-  @param  _labelColors  tuple of colors corresponding to 
+  @param  _streams            _IOTuple of all streams
+  @param  _labelColors        tuple of colors corresponding to 
+  @param  show_caller_info    
+  @param  show_label_out_msgs
+  @param  show_debug_msgs
   """
 
   _streams: _IOTuple
   _labelColors: _IOTuple
 
-  SHOW_CALLER_INFORMATION: bool
-  SHOW_LABEL_OUT_MESSAGES: bool
-  SHOW_DEBUG_MESSAGES: bool
+  show_caller_info: bool
+  show_label_out_msgs: bool
+  show_debug_msgs: bool
 
-  ##
-  # constructor
-  #
-  # @param  conf  Dictionary, which describes a IOManager and enables the specification over a
-  #               global configuration-file, which specifies the Flags.  The default Flags can
-  #               be viewed by calling the Function 'createIOManagerDefaultConfig'.
-  #
   def __init__(self, conf: Dict[str, Any]) -> None:
+    """
+    constructor
+   
+    @param  conf  Dictionary, which describes a IOManager and enables the 
+        specification over a global configuration-file, which specifies the 
+        Flags.  The default Flags can be viewed by calling the Function 
+        'createIOManagerDefaultConfig'.
+    """
     self._streams = None
     self._labelColors = None
-    self.SHOW_CALLER_INFORMATION = None
-    self.SHOW_LABEL_OUT_MESSAGES = None
-    self.SHOW_DEBUG_MESSAGES = None
+    self.show_caller_info = None
+    self.show_label_out_msgs = None
+    self.show_debug_msgs = None
 
     self.load(conf)
 
-  ##
-  # TODO: load-descrition
-  #
-  # @param  conf  Dictionary, which describes a IOManager and enables the specification over a
-  #               global configuration-file, which specifies the Flags.  The default Flags can
-  #               be viewed by calling the Function 'createIOManagerDefaultConfig'.
-  #
   def load(self, conf: Dict[str, Any]) -> None:
+    """
+    TODO: load-descrition
+        
+    @param  conf  Dictionary, which describes a IOManager and enables the 
+        specification over a global configuration-file, which specifies the 
+        Flags.  The default Flags can be viewed by calling the Function 
+        'createIOManagerDefaultConfig'.
+    """
     self._streams = _IOTuple(
         out=conf["OUT_STREAM"],
         debug=conf["DEBUG_STREAM"],
@@ -128,19 +128,19 @@ class IOManager():
         error=CLIColors.getFromStr(conf["ERROR_LABEL_COLOR"])
     )
 
-    self.SHOW_CALLER_INFORMATION = bool(conf["SHOW_CALLER_INFORMATION"])
-    self.SHOW_LABEL_OUT_MESSAGES = bool(conf["SHOW_LABEL_OUT_MESSAGES"])
-    self.SHOW_DEBUG_MESSAGES = bool(conf["SHOW_DEBUG_MESSAGES"])
+    self.show_caller_info = bool(conf["SHOW_CALLER_INFORMATION"])
+    self.show_label_out_msgs = bool(conf["SHOW_LABEL_OUT_MESSAGES"])
+    self.show_debug_msgs = bool(conf["SHOW_DEBUG_MESSAGES"])
 
-  ##
-  # Prints the caller-information. Farmated as 'function' or 'Class.function', if
-  # memberfunction
-  #
-  # @param  stream  stream the information should be print to
-  #
   def _printCallerInformation(self, stream: TextIO) -> None:
-    # only print caller-information, if 'SHOW_CALLER_INFORMATION' flag is set
-    if self.SHOW_CALLER_INFORMATION:
+    """
+    Prints the caller-information. Farmated as 'function' or 'Class.function', 
+    if memberfunction
+   
+    @param  stream  stream the information should be print to
+    """
+    # only print caller-information, if 'show_caller_info' flag is set
+    if self.show_caller_info:
       caller = ""
       try:
         # adds the class of the function, if memberfunction ('Class.')
@@ -153,43 +153,43 @@ class IOManager():
       caller += str(inspect.stack()[2].function)
       print(f"{caller} :: ", end="", file=stream)
 
-  ##
-  # Prints the label onto the stream.
-  #
-  # @param  streamLabel   name of the stream as str
-  # @param  labelColor    color of the label as str (e.g. '\033[97m')
-  # @param  stream        stream the label should be print to
-  #
   def _printLabel(
       self, streamLabel: str, labelColor: str, stream: TextIO
   ) -> None:
+    """
+    Prints the label onto the stream.
+   
+    @param  streamLabel   name of the stream as str
+    @param  labelColor    color of the label as str (e.g. '\033[97m')
+    @param  stream        stream the label should be print to
+    """
     if labelColor != "":
       label = f"{CLIFormat.BOLD}{labelColor}{streamLabel} |{CLIFormat.ENDF} "
     else:
       label = f"{streamLabel} | "
     print(label, end="", file=stream)
 
-  ##
-  # Gets an input from the commandline.
-  #
-  # @param  text  prompt for input
-  # @return       read string from the commandline
-  #
   @staticmethod
   def input(text: str = "") -> str:
+    """
+    Gets an input from the commandline.
+   
+    @param  text  prompt for input
+    @return       read string from the commandline
+    """
     return input(text)
 
-  ##
-  # Wrapper for default print-function.  Should not be used, use 'out' instead.
-  #
-  # @param  values  objects to print onto default stream
-  #
   @staticmethod
   def print(*values: object) -> None:
+    """
+    Wrapper for default print-function.  Should not be used, use 'out' instead.
+   
+    @param  values  objects to print onto default stream
+    """
     print(*values, end="")
 
   def out(self, *values: object) -> None:
-    if self.SHOW_LABEL_OUT_MESSAGES:
+    if self.show_label_out_msgs:
       self._printLabel('OUT  ', self._labelColors.out, self._streams.out)
     print(*values, file=self._streams.out)
 
@@ -199,7 +199,7 @@ class IOManager():
     print(*values, file=self._streams.error)
 
   def debug(self, *values: object) -> None:
-    if self.SHOW_DEBUG_MESSAGES:
+    if self.show_debug_msgs:
       self._printLabel('DEBUG', self._labelColors.debug, self._streams.error)
       self._printCallerInformation(self._streams.debug)
       print(*values, file=self._streams.debug)
