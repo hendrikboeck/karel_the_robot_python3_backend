@@ -23,15 +23,35 @@ from typing import Any, Dict, Iterable, Union, List
 
 
 def promiseList(val: Any) -> List[Any]:
+  """
+  Promises the value to be list. If it is already a list the function will just
+  return the value, if not the function will return val as a list.
+
+  @param  val   value that should be promised as a list
+  @return       val, now as list, if it was not
+  """
   if isinstance(val, list): return val
   else: return [val]
 
 
 def classname(obj: object) -> str:
+  """
+  Returns the classname of an object as a string.
+
+  @param  obj   object
+  @return       classname of object as string
+  """
   return obj.__class__.__name__
 
 
 def defaultOnError(func: function, alt_val: Any) -> Any:
+  """
+  Returns a default value, if function fails to execute and throws Exception.
+
+  @param  func    function
+  @param  alt_val default value
+  @return         return of function or on error alt_val
+  """
   try:
     return func()
   except:
@@ -39,17 +59,34 @@ def defaultOnError(func: function, alt_val: Any) -> Any:
 
 
 def defaultOnNone(val: Any, alt_val: Any) -> Any:
-  return val or alt_val
+  """
+  Returns a default value, if val is None.
 
+  @param  val     value to be checked
+  @param  alt_val default value
+  @return         val if not None, else alt_val
+  """
+  if val is None:
+    return alt_val
+  else:
+    return val
 
+# Interface declaration (just renaming of ABC in python)
 InterfaceMeta = ABCMeta
 Interface = ABC
 interfacemethod = abstractmethod
 
+# NotInstanceable declaration
 NotInstanceable = ABC
 
 
 class EnumLikeMeta(type):
+  """
+  Enumlike class that prevents a object of class to be instanciated and just
+  function as a wrapper for static values and static functions.
+
+  @extends  type
+  """
 
   def __call__(cls, *args: List[Any], **kwargs: Dict[str, Any]) -> Any:
     raise TypeError(
@@ -58,28 +95,39 @@ class EnumLikeMeta(type):
 
 
 class EnumLike(metaclass=EnumLikeMeta):
+  """Class wrapper for EnumLikeMeta"""
   pass
 
 
 class SingletonMeta(type):
+  """
+  Metaclass for Singleton GoF pattern.
 
-  _instances: dict = {}
+  @param  _INSTANCES  dict of instances of class
+  """
+
+  _INSTANCES: dict = {}
 
   def __call__(cls, *args, **kwargs):
-    if not cls._instances.get(cls):
-      cls._instances[cls] = super(SingletonMeta, cls).__call__(*args, **kwargs)
-    return cls._instances.get(cls)
+    if not cls._INSTANCES.get(cls):
+      cls._INSTANCES[cls] = super(SingletonMeta, cls).__call__(*args, **kwargs)
+    return cls._INSTANCES.get(cls)
 
 
 class SingletonFactoryMeta(type):
+  """
+  Metaclass for Singletons that are identified through a string.
 
-  _instances: dict = {}
+  @param  _INSTANCES  dict of instances of class
+  """
+
+  _INSTANCES: dict = {}
 
   def __call__(cls, *args: Any, **kwargs: Any) -> Any:
-    if not cls._instances.get(args[0]):
-      cls._instances[args[0]] = \
+    if not cls._INSTANCES.get(args[0]):
+      cls._INSTANCES[args[0]] = \
         super(SingletonFactoryMeta, cls).__call__(*args, **kwargs)
-    return cls._instances.get(args[0])
+    return cls._INSTANCES.get(args[0])
 
 
 class Flag(metaclass=SingletonFactoryMeta):

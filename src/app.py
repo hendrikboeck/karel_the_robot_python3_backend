@@ -81,10 +81,12 @@ class App():
     # ----------------------------------------------------------------------------------------
 
     while (gameloop):
+      # get local variables
       scene = SceneManager().getScene()
       frametime = clock.tick(conf.maxfps)
       fps = clock.get_fps()
 
+      # Event-handling
       for event in pg.event.get():
         if event.type == pg.QUIT:
           gameloop = False
@@ -94,6 +96,7 @@ class App():
         fpsoverlay.proccessEvent(event)
         scene.proccessEvent(event)
 
+      # Updating components
       menuManager.update(frametime / 1000.0)
       scene.update(time_delta=frametime / 1000.0)
       fpsoverlay.update(fps)
@@ -101,17 +104,20 @@ class App():
       if dWindow.visible:
         debugInformationDict.update(FPS=int(fps), FRAMETIME=frametime)
 
+      # get button presses
       if rmenu.getListItem("fps").check_pressed():
         fpsoverlay.toggle()
       if rmenu.getListItem("debugwin").check_pressed():
         dWindow.set_position(pg.mouse.get_pos())
         dWindow.toggle()
 
+      # redner components
       screen.blit(background, (0, 0))
       scene.render(screen)
       menuManager.draw_ui(screen)
       fpsoverlay.render(screen)
 
+      # update buffer
       pg.display.flip()
 
     # ----------------------------------------------------------------------------------------

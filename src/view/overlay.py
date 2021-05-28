@@ -25,7 +25,7 @@ import pygame as pg
 # LOCAL IMPORT
 from constants import GAME_FONT, WINDOW_TOP_RIGHT
 import assets
-from assets.color import HexColor
+from assets.color import Basics, HexColor
 
 
 class Overlay(pg.Surface, ABC):
@@ -74,7 +74,7 @@ class FPSOverlay(Overlay):
     fps = int(fps)
     if fps != self.lastFps:
       text = f"{fps}"
-      self.textSurf = self.textFont.render(text, True, HexColor("#ff0000"))
+      self.textSurf = self.textFont.render(text, True, Basics.RED)
       self.lastFps = fps
 
   def render(self, surf: pg.Surface) -> None:

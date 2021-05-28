@@ -44,15 +44,15 @@ class ClickButtonMenu(UIPanel):
   BUTTON_PADDING = Vector2f(15, 5)
 
   menuitems: OrderedDict[str, UIButton]
-  dim: Vector2f  # super().dimensions exists!
+  dim: Vector2f  # super().dimensions exists!, do not rename
 
-  ##
-  # constructor
-  #
-  # @param  manager                 UIManager for pygame_gui elements
-  # @param  assetsPath [optional]   path to .xml-file containing menu-config
-  #
   def __init__(self, manager: UIManager, assetsPath: str = None) -> None:
+    """
+    constructor
+   
+    @param  manager                 UIManager for pygame_gui elements
+    @param  assetsPath [optional]   path to .xml-file containing menu-config
+    """
     super().__init__(pg.Rect(0, 0, 0, 0), 0, manager, visible=False)
     self.dim = Vector2f(0, 0)
     self.menuitems = OrderedDict()
@@ -62,14 +62,15 @@ class ClickButtonMenu(UIPanel):
       for i in items:
         self.addListItem(i["key"], i["text"])
 
-  ##
-  # Can be overridden, also handle resizing windows. Gives UI Windows access to pygame events.
-  # Currently just blocks mouse click down events from passing through the panel.
-  #
-  # @param  event   the event to process
-  # @return         should return True if this element consumes this event
-  #
   def process_event(self, event: pg.event.Event) -> bool:
+    """
+    Can be overridden, also handle resizing windows. Gives UI Windows access to
+    pygame events. Currently just blocks mouse click down events from passing 
+    through the panel.
+   
+    @param  event   the event to process
+    @return         should return True if this element consumes this event
+    """
     if event.type == pg.MOUSEBUTTONDOWN:
       if event.button == 3:  # Rechtsklick
         self.set_position(pg.mouse.get_pos())
@@ -82,15 +83,15 @@ class ClickButtonMenu(UIPanel):
       item.process_event(event)
     return super().process_event(event)
 
-  ##
-  # Adds a new listitem, which is identified by a key, to the menu.  The item will be returned
-  # or can be accessed through function 'getListItem'.
-  #
-  # @param  key   key for identification of object inside menu
-  # @param  text  the text of the menuitem
-  # @return       newly created listitem (UIButton)
-  #
   def addListItem(self, key: str, text: str) -> UIButton:
+    """
+    Adds a new listitem, which is identified by a key, to the menu.  The item
+    will be returned or can be accessed through function 'getListItem'.
+   
+    @param  key   key for identification of object inside menu
+    @param  text  the text of the menuitem
+    @return       newly created listitem (UIButton)
+    """
     button = self.menuitems[key] = UIButton(
         relative_rect=pg.Rect(0, self.dim.y, 0, 0),
         text=text,
@@ -123,18 +124,27 @@ class ClickButtonMenu(UIPanel):
     # return newly created Button
     return self.menuitems[key]
 
-  ##
-  # Returns the listitem to a given key inside menu.  If key dos not exist None will be
-  # returned.
-  #
-  # @param  key   key for identification of object inside menu
-  # @return       coresponding listitem (UIButton) for key
-  #
   def getListItem(self, key: str) -> UIButton:
+    """
+    Returns the listitem to a given key inside menu.  If key dos not exist None
+    will be returned.
+   
+    @param  key   key for identification of object inside menu
+    @return       coresponding listitem (UIButton) for key
+    """
     return self.menuitems.get(key)
 
 
 class Sidemenu(UIPanel):
+  """
+  Sidemenu for Main-Game-Scene. Controls speed for karel and also starts the
+  command-queue.
+
+  @param  _container    container of sidemenu
+  @param  startBtn      start button
+  @param  speedSlider   slider, that controls speed of Karel
+  @param  speedLabel    label that shows speed of Karel
+  """
 
   _container: UIContainer
   startBtn: UIButton
@@ -142,6 +152,13 @@ class Sidemenu(UIPanel):
   speedLabel: GLabel
 
   def __init__(self, manager: UIManager, width: float) -> None:
+    """
+    constructor
+
+    @param  manager   UIManager for pygame_gui elements
+    @param  width     if width < 1, then it will be dynamicaly sized of 
+        WINDOW_DIMENSIONS, if width >= 1, then it will be absolute sized
+    """
     if width < 1:
       width *= WINDOW_DIMENSIONS.x
     super().__init__(
@@ -196,6 +213,14 @@ class Sidemenu(UIPanel):
     )
 
   def process_event(self, event: pg.event.Event) -> bool:
+    """
+    Can be overridden, also handle resizing windows. Gives UI Windows access to
+    pygame events. Currently just blocks mouse click down events from passing 
+    through the panel.
+   
+    @param  event   the event to process
+    @return         should return True if this element consumes this event
+    """
     if event == GAME_START_EVENT:
       self.startBtn.disable()
     elif event == GAME_FINISHED_EVENT:
@@ -203,6 +228,13 @@ class Sidemenu(UIPanel):
     return super().process_event(event)
 
   def update(self, time_delta: float) -> None:
+    """
+    Update speedLabel and post events.
+    
+    @overwrite
+
+    @param  time_delta  time of last frame in s
+    """
     self.speedLabel.set_text(f"{self.speedSlider.current_value:.2f}")
     if self.startBtn.check_pressed():
       pg.event.post(GAME_START_EVENT)

@@ -26,6 +26,8 @@ from pyadditions.types import EnumLike
 
 
 class CLIFormat(EnumLike):
+  """Enum of CLI-Format as strings"""
+
   ENDF = "\033[0m"
   BOLD = "\033[1m"
   RST_BOLD = "\033[21m"
@@ -42,6 +44,8 @@ class CLIFormat(EnumLike):
 
 
 class CLIColors(EnumLike):
+  """Enum of CLI-Colors as strings"""
+
   DEFAULT = "\033[39m"
   BLACK = "\033[30m"
   RED = "\033[31m"
@@ -61,11 +65,19 @@ class CLIColors(EnumLike):
   WHITE = "\033[97m"
   NULL = ""
 
-  def getFromStr(colorName: str) -> str:
-    return CLIColors.__dict__.get(colorName, CLIColors.NULL)
+  def getFromStr(colorname: str) -> str:
+    """
+    Returns Color to a given colorname
+
+    @param  colorname   name of color in enum
+    @return             coresponding color
+    """
+    return CLIColors.__dict__.get(colorname, CLIColors.NULL)
 
 
 class _IOTuple(NamedTuple):
+  """Tuple of out, debug, error component"""
+
   out: Any
   debug: Any
   error: Any
@@ -78,7 +90,7 @@ class IOManager():
   information which the user/developer can get.
 
   @param  _streams            _IOTuple of all streams
-  @param  _labelColors        tuple of colors corresponding to
+  @param  _labelColors        tuple of colors corresponding to streams
   @param  show_caller_info    
   @param  show_label_out_msgs
   @param  show_debug_msgs
@@ -97,7 +109,7 @@ class IOManager():
    
     @param  conf  Dictionary, which describes a IOManager and enables the
         specification over a global configuration-file, which specifies the
-        Flags.  The default Flags can be viewed by calling the Function 
+        Flags. The default Flags can be viewed by calling the Function 
         'createIOManagerDefaultConfig'.
     """
     self._streams = None
@@ -110,11 +122,11 @@ class IOManager():
 
   def load(self, conf: Dict[str, Any]) -> None:
     """
-    TODO: load-descrition
+    Loads another configuration into the IOManager.
         
     @param  conf  Dictionary, which describes a IOManager and enables the 
         specification over a global configuration-file, which specifies the 
-        Flags.  The default Flags can be viewed by calling the Function 
+        Flags. The default Flags can be viewed by calling the Function 
         'createIOManagerDefaultConfig'.
     """
     self._streams = _IOTuple(
@@ -147,7 +159,8 @@ class IOManager():
         caller += str(
             inspect.stack()[2].frame.f_locals['self'].__class__.__name__
         ) + "."
-      except:
+      except KeyError:
+        # caller has self, as it is a function
         pass
       # adds the function name ('function')
       caller += str(inspect.stack()[2].function)
@@ -189,16 +202,31 @@ class IOManager():
     print(*values, end="")
 
   def out(self, *values: object) -> None:
+    """
+    Prints values out to the out-stream.
+
+    @param  values  values to be printed
+    """
     if self.show_label_out_msgs:
       self._printLabel('OUT  ', self._labelColors.out, self._streams.out)
     print(*values, file=self._streams.out)
 
   def error(self, *values: object) -> None:
+    """
+    Prints values out to the error-stream.
+
+    @param  values  values to be printed
+    """
     self._printLabel('ERROR', self._labelColors.error, self._streams.error)
     self._printCallerInformation(self._streams.error)
     print(*values, file=self._streams.error)
 
   def debug(self, *values: object) -> None:
+    """
+    Prints values out to the debug-stream, if show_debug_msgs is set.
+
+    @param  values  values to be printed
+    """
     if self.show_debug_msgs:
       self._printLabel('DEBUG', self._labelColors.debug, self._streams.error)
       self._printCallerInformation(self._streams.debug)
@@ -206,6 +234,11 @@ class IOManager():
 
 
 def createIOManagerDefaultConfig() -> Dict[str, Any]:
+  """
+  Creates a default configuration dictonary for a IOManager.__init__ .
+
+  @return   Default config as Dict[str, Any]
+  """
   return dict(
       OUT_STREAM=stdout,
       DEBUG_STREAM=stderr,
@@ -220,6 +253,12 @@ def createIOManagerDefaultConfig() -> Dict[str, Any]:
 
 
 def createIOManagerConfigFromDict(conf: Dict[str, Any]) -> Dict[str, Any]:
+  """
+  Creates a configuration dictonary for a IOManager.__init__ from a dict.
+
+  @param  conf  dict of parameters for config
+  @return       dict config for IOManager
+  """
   result = createIOManagerDefaultConfig()
   for (key, value) in conf.items():
     uKey = key.upper()
@@ -229,5 +268,5 @@ def createIOManagerConfigFromDict(conf: Dict[str, Any]) -> Dict[str, Any]:
       raise Exception(f"unkown key {key} as {uKey}")
   return result
 
-
+# Global Variable which holds IOManager
 IOM = IOManager(createIOManagerDefaultConfig())

@@ -24,6 +24,12 @@ from command import Command, CommandResult, CommandFactory
 
 
 def createCommandFromStr(data: str) -> Command:
+  """
+  Creates a executable command form string received from RPC.
+
+  @param  data  command fromated as string
+  @result       command as executable Command
+  """
   data = json.loads(data)
   return CommandFactory().create(
       functionName=data["function"], id_=data["id"], args=data["args"]
@@ -31,4 +37,10 @@ def createCommandFromStr(data: str) -> Command:
 
 
 def createRPCStrFromCommandResult(res: CommandResult) -> str:
+  """
+  Creates a string of RPC-Command.
+
+  @param  res   result of a command
+  @return       result as a string
+  """
   return json.dumps({"id": res.id_, "result": res.data})

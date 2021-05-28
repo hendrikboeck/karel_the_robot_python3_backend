@@ -28,6 +28,14 @@ from pygame_gui.core import UIElement
 
 
 class GLabel(UILabel):
+  """
+  Is a UILabel that dynamicaly sizes to text, if bounds of rect is (0, 0), else
+  it is a normal UILabel.
+
+  @extends  UILabel
+
+  @param  dynamicSize   flag that makes UILable dynamic.
+  """
 
   dynamicSize: bool
 
@@ -42,6 +50,18 @@ class GLabel(UILabel):
       anchors: Dict[str, str] = None,
       visible: int = 1
   ) -> None:
+    """
+    constructor
+
+    @param  relative_rect   rect relative to/in container
+    @param  manager         uimanager
+    @param  text            text of label
+    @param  container       container of label
+    @param  parent_element  parent element of label
+    @param  object_id       id of gui-object
+    @param  anchors         anchors of gui-object
+    @param  visible         sets, if label will be visible on create
+    """
     super().__init__(
         relative_rect=relative_rect,
         text="",
@@ -56,6 +76,14 @@ class GLabel(UILabel):
     self.set_text(text or "")
 
   def set_text(self, text: str) -> None:
+    """
+    Sets text of label. If label is dynamic-flag, then it will also resize the
+    label.
+
+    @overwrite
+
+    @param  text  text to be shown on label
+    """
     if text != self.text:
       self.text = text
       if self.dynamicSize:

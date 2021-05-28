@@ -49,12 +49,12 @@ def createMapConfigFromXML(xml_: Dict[str, Any]) -> Dict[str, Any]:
 
   conf["world"]["size"] = Vector2f(*ast.literal_eval(xml_["size"]))
   metadata = xml_.get("metadata", {})
-  conf["world"]["metadata"] = {
-      "name": metadata.get("name", "unkown"),
-      "version": metadata.get("version", "unkown"),
-      "author": metadata.get("author", "unkown"),
-      "speed": xml_.get("speed", "1.0")
-  }
+  conf["world"]["metadata"] = dict(
+      name=metadata.get("name", "unkown"),
+      version=metadata.get("version", "unkown"),
+      author=metadata.get("author", "unkown"),
+      speed=xml_.get("speed", "1.0")
+  )
 
   walls = promiseList(xml_.get("wall", []))
   for wall in walls:
@@ -71,7 +71,9 @@ def createMapConfigFromXML(xml_: Dict[str, Any]) -> Dict[str, Any]:
 
   karel = xml_.get("karel", {})
   conf["karel"] = {}
-  conf["karel"]["position"] = Vector2f(*ast.literal_eval(karel.get("position", "(1, 1)")))
+  conf["karel"]["position"] = Vector2f(
+      *ast.literal_eval(karel.get("position", "(1, 1)"))
+  )
   conf["karel"]["orientation"] = KarelOrientation.fromString(
       karel.get("orientation", "EAST")
   )
@@ -167,9 +169,7 @@ class _KarelOrientationTuple(NamedTuple):
 
 
 class KarelOrientation(EnumLike):
-  """
-  Enum of all the compass-directions as _KarelOrientationTuple
-  """
+  """Enum of all the compass-directions as _KarelOrientationTuple"""
 
   NORTH = _KarelOrientationTuple("NORTH", 90.0, Vector2f(0, 1))
   EAST = _KarelOrientationTuple("EAST", 0.0, Vector2f(1, 0))
@@ -227,9 +227,7 @@ class Tile():
     self.rebuild()
 
   def rebuild(self) -> None:
-    """
-    Rebuilds the render-surface of Tile.
-    """
+    """Rebuilds the render-surface of Tile."""
     self.surf = assets.load.image("64x/tile.png")
     for angle in self._walls:
       self._buildWall(angle)
@@ -345,9 +343,7 @@ class Karel():
     self.setOrientation(conf["orientation"])
 
   def rebuild(self) -> None:
-    """
-    Rebuilds the render-surface of Karel.
-    """
+    """Rebuilds the render-surface of Karel."""
     self.surf = assets.load.image("64x/karel.png")
     oldOrientation = self.orientation
     self.orientation = KarelOrientation.EAST
@@ -376,9 +372,7 @@ class Karel():
       self.orientation = orientation
 
   def rotate90(self) -> None:
-    """
-    Rotates Karel by 90deg.
-    """
+    """Rotates Karel by 90deg."""
     self.setOrientation(
         KarelOrientation.fromAngle((self.orientation.angle + 90) % 360)
     )
@@ -458,9 +452,7 @@ class World():
     self.rebuild()
 
   def rebuild(self) -> None:
-    """
-    Rebuilds the render-surface of World.
-    """
+    """Rebuilds the render-surface of World."""
     for row in self.tiles:
       for tile in row:
         self.surf.blit(tile.surf, tile.rect)
@@ -517,9 +509,7 @@ class World():
 
 
 class LevelState(EnumLike):
-  """
-  Enum which describes the different states for the level.
-  """
+  """Enum which describes the different states for the level."""
 
   INIT = 1
   RUNNING = 2
@@ -577,11 +567,17 @@ class Level():
   isScaled: bool
 
   def __init__(
-      self, mapName: str, bounds: Union[Tuple[float, float], List[float],
+      self, mapname: str, bounds: Union[Tuple[float, float], List[float],
                                         Vector2f]
   ) -> None:
+    """
+    constructor
+
+    @param  mapname   name of map
+    @param  bounds    bounds of surface
+    """
     try:
-      mapXml = assets.load.xml(f"map/{mapName}.xml")
+      mapXml = assets.load.xml(f"map/{mapname}.xml")
       map_ = createMapConfigFromXML(mapXml)
     except Exception as e:
       raise MapLoadingError(e)
@@ -631,9 +627,7 @@ class Level():
     self.scaledSurf = Surface((self.rect.width, self.rect.height))
 
   def repaint(self) -> None:
-    """
-    Repaint the game surface (scaled surface to if in scaled mode).
-    """
+    """Repaint the game surface (scaled surface to if in scaled mode)."""
     self.surf.fill(HexColor("#000000"))
     self.surf.blit(self.world.surf, (1, 1))
 
@@ -652,9 +646,7 @@ class Level():
       )
 
   def update(self, speed: float) -> None:
-    """
-    Update level and information about level
-    """
+    """Update level and information about level"""
     self.speed = speed
     DebugInformationDict().update(
         KAREL_POSITION=self.karel.position,
@@ -712,21 +704,17 @@ class Level():
       )
 
   def waitOnRunning(self) -> None:
-    """
-    Stops the thread, till the level has been started.
-    """
+    """Stops the thread, till the level has been started."""
     if self.state == LevelState.INIT or self.state == LevelState.PAUSE:
       # IOM.out(f"WAIT FOR '{GAME_START_EVENT.attr1}' or '{GAME_CONTINUE_EVENT.attr1}'")
       while self.state == LevelState.INIT or self.state == LevelState.PAUSE:
         sleep(0.07)
 
-  #
-  #
-  # ---------------------- KAREL-LOGIC -------------------------------
-  #
-  #
-
   def karelMove(self) -> None:
+    """
+    is a Karel-Action. Makes Karel move 1 tile forward in the direction he is
+    looking at. If Karel can not execute move a Error is raised.
+    """
     if self.playable():
       if self.karelFrontIsClear():
         self.world.rebuildTileAtKCS(self.karel.position)
@@ -738,6 +726,10 @@ class Level():
       raise UnallowedActionError("karelMove")
 
   def karelTurnLeft(self) -> None:
+    """
+    is a Karel-Action. Makes Karel turn left. If Karel can not execute turnLeft
+    a Error is raised.
+    """
     if self.playable():
       self.world.rebuildTileAtKCS(self.karel.position)
       self.karel.rotate90()
@@ -746,6 +738,10 @@ class Level():
       raise UnallowedActionError("karelTurnLeft")
 
   def karelPickBeeper(self) -> None:
+    """
+    is a Karel-Action. Makes Karel pick a beeper from current position. If Karel
+    can not execute pickBeeper a Error is raised.
+    """
     if self.playable():
       if self.karelBeeperPresent():
         self.world.getTileAtKCS(self.karel.position).decrBeepers()
@@ -758,6 +754,10 @@ class Level():
       raise UnallowedActionError("karelPickBeeper")
 
   def karelPutBeeper(self) -> None:
+    """
+    is a Karel-Action. Makes Karel put a beeper at current position. If Karel 
+    can not execute putBeeper a Error is raised.
+    """
     if self.playable():
       if self.karelBeeperInBag():
         self.world.getTileAtKCS(self.karel.position).incrBeepers()
@@ -772,25 +772,38 @@ class Level():
   def _karelIsOrientationBlocked(
       self, orientation: _KarelOrientationTuple
   ) -> bool:
+    """
+    Returns wether a wall exists in a given orientation of Karel.
+
+    @param  orientation   orientation that should be checked
+    @return               True if wall exists at orientation of Karel
+    """
     nextTileKCSPoint = self.karel.position + orientation.vector
 
     outOfBounds = self.world.isOutOfBoundsKCS(nextTileKCSPoint)
-    hitWall = outOfBounds or self.world.getTileAtKCS(
-        self.karel.position
-    ).wallAt(orientation.angle
-            ) or self.world.getTileAtKCS(nextTileKCSPoint).wallAt(
-                (orientation.angle + 180) % 360
-            )
-
-    return outOfBounds or hitWall
+    return outOfBounds or self.world.getTileAtKCS(self.karel.position).wallAt(
+        orientation.angle
+    ) or self.world.getTileAtKCS(nextTileKCSPoint).wallAt(
+        (orientation.angle + 180) % 360
+    )
 
   def karelFrontIsClear(self) -> bool:
+    """
+    is a Karel-Question. Returns wether there is a wall in front of Karel.
+
+    @return   True if there is no wall in front of Karel
+    """
     if self.playable():
       return not self._karelIsOrientationBlocked(self.karel.orientation)
     else:
       raise UnallowedActionError("karelFrontIsClear")
 
   def karelLeftIsClear(self) -> bool:
+    """
+    is a Karel-Question. Returns wether there is a wall to the left of Karel.
+
+    @return   True if there is no wall to the left of Karel
+    """
     if self.playable():
       return not self._karelIsOrientationBlocked(
           KarelOrientation.fromAngle((self.karel.orientation.angle + 90) % 360)
@@ -799,6 +812,11 @@ class Level():
       raise UnallowedActionError("karelLeftIsClear")
 
   def karelRightIsClear(self) -> bool:
+    """
+    is a Karel-Question. Returns wether there is a wall to the right of Karel.
+
+    @return   True if there is no wall to the right of Karel
+    """
     if self.playable():
       return not self._karelIsOrientationBlocked(
           KarelOrientation.fromAngle(
@@ -809,36 +827,68 @@ class Level():
       return UnallowedActionError("karelLeftIsClear")
 
   def karelBeeperInBag(self) -> bool:
+    """
+    is a Karel-Question. Returns wether Karel has at least one beeper left in
+    his bag.
+
+    @return   True if Karel has at least one beeper in bag
+    """
     if self.playable():
       return not self.karel.beeperbagIsEmpty()
     else:
       raise UnallowedActionError("karelBeeperInBag")
 
   def karelBeeperPresent(self) -> bool:
+    """
+    is a Karel-Question. Returns wether at least one beeper is present on the
+    position Karel is at.
+
+    @return   True if at least one beeper is present on Karel's current position
+    """
     if self.playable():
       return self.world.getTileAtKCS(self.karel.position).getBeepers() > 0.0
     else:
       raise UnallowedActionError("karelBeeperPresent")
 
   def karelFacingNorth(self) -> bool:
+    """
+    is a Karel-Question. Returns wether Karel is currently facing north.
+
+    @return   True if Karel is facing north
+    """
     if self.playable():
       return self.karel.orientation == KarelOrientation.NORTH
     else:
       raise UnallowedActionError("karelFacingNorth")
 
   def karelFacingEast(self) -> bool:
+    """
+    is a Karel-Question. Returns wether Karel is currently facing east.
+
+    @return   True if Karel is facing east
+    """
     if self.playable():
       return self.karel.orientation == KarelOrientation.EAST
     else:
       raise UnallowedActionError("karelFacingEast")
 
   def karelFacingSouth(self) -> bool:
+    """
+    is a Karel-Question. Returns wether Karel is currently facing south.
+
+    @return   True if Karel is facing south
+    """
     if self.playable():
       return self.karel.orientation == KarelOrientation.SOUTH
     else:
       raise UnallowedActionError("karelFacingSouth")
 
   def karelFacingWest(self) -> bool:
+    """
+    is a Karel-Question. Returns wether Karel is currently facing west.
+
+    @return   True if Karel is facing west
+    """
     if self.playable():
       return self.karel.orientation == KarelOrientation.WEST
     else:

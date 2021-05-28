@@ -26,6 +26,8 @@ HexColor = Color
 
 
 class Basics(EnumLike):
+  """Enum of basic colors"""
+
   WHITE = HexColor("#ffffff")
   BLACK = HexColor("#000000")
   RED = HexColor("#ff0000")
