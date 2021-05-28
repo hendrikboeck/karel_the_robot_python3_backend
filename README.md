@@ -1,7 +1,7 @@
 <p align="center"><img width=64px src="assets/64x/karel.png"></p>
 <h1 align="center">Karel The Robot - Universal Backend</h1>
 
-![Python](https://img.shields.io/badge/python-v3.9+-blue.svg) [![License](https://img.shields.io/badge/license-GPL_v3.0-blue.svg)](https://opensource.org/licenses/GPL-3.0)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ddbd2001e3184abe93073fc11b672712)](https://www.codacy.com/gh/hendrikboeck/karel_the_robot_python3_backend/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=hendrikboeck/karel_the_robot_python3_backend&amp;utm_campaign=Badge_Grade) ![Python](https://img.shields.io/badge/python-v3.9+-blue.svg) [![License](https://img.shields.io/badge/license-GPL_v3.0-blue.svg)](https://opensource.org/licenses/GPL-3.0)
 
 - [1. General](#1-general)
   - [1.1. Abstract](#11-abstract)
