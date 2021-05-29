@@ -73,7 +73,7 @@ class SocketAddr(NamedTuple):
 
   def isBound(self) -> bool:
     """
-    Checks if a given SocketAddr is already bound to application. Can be used 
+    Checks if a given SocketAddr is already bound to application. Can be used
     to check if a SocketAddr is already taken.
 
     @return   True is SocketAddr is already bound

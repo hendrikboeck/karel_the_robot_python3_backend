@@ -71,6 +71,7 @@ def defaultOnNone(val: Any, alt_val: Any) -> Any:
   else:
     return val
 
+
 # Interface declaration (just renaming of ABC in python)
 InterfaceMeta = ABCMeta
 Interface = ABC

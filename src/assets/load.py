@@ -37,7 +37,7 @@ from pyadditions.sys import fileExists
 def _getResourcePath(relativePath: str) -> str:
   """
   Returns a relative path for resource loading. If app is run as executable the
-  resources will be loaded from exe. When run as python, local files will be 
+  resources will be loaded from exe. When run as python, local files will be
   used
 
   @param  relativePath  relative path in ASSETS_FOLDER
@@ -121,7 +121,7 @@ def xml(filepath: str) -> dict:
   tree = ElementTree.parse(_getResourcePath(filepath))
   (key, value) = _xmlnodeToTuple(tree.getroot())
 
-  if type(value) == dict: return value
+  if isinstance(value, dict): return value
   else: return {key: value}
 
 

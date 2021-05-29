@@ -32,7 +32,7 @@ class CommandResult(NamedTuple):
   Describes a result for a command
 
   @extends  NamedTuple
- 
+
   @param  id_   id of parent-command
   @param  data  returned data of command
   """
@@ -336,7 +336,7 @@ class GameCloseCommand(Command):
 
 class CommandFactory(metaclass=SingletonMeta):
   """
-  Wrapper for 
+  Factory-class for commands.
 
   @extends  SingletonMeta
 
@@ -368,7 +368,7 @@ class CommandFactory(metaclass=SingletonMeta):
     creates a Command from functionName
 
     @param  functionName  name of function from API
-    @param  id_           numeric id of command (set by frontend, for 
+    @param  id_           numeric id of command (set by frontend, for
       identification of reply)
     @param  args          arguments of command
     @return               corresporing Command

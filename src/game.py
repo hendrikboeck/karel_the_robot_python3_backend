@@ -127,8 +127,8 @@ class UnallowedActionError(RuntimeError):
 class _KarelOrientationTuple(NamedTuple):
   """
   This class specifies a Set of values, which specify a compass-direction in the
-  Game. It is used to specify the orientation Karel is looking at and how Walls 
-  are placed. (The different compass-directions are specified in the EnumLike 
+  Game. It is used to specify the orientation Karel is looking at and how Walls
+  are placed. (The different compass-directions are specified in the EnumLike
   KarelOrientation-class)
 
   @extends  NamedTuple
@@ -151,7 +151,7 @@ class _KarelOrientationTuple(NamedTuple):
 
   def isHorizontal(self) -> bool:
     """
-    Checks if a compass-direction of a _KarelOrientationTuple is horizontally 
+    Checks if a compass-direction of a _KarelOrientationTuple is horizontally
     aligned
 
     @return   True if 'EAST' or 'WEST'
@@ -160,7 +160,7 @@ class _KarelOrientationTuple(NamedTuple):
 
   def isVertical(self) -> bool:
     """
-    Checks if a compass-direction of a _KarelOrientationTuple is vertically 
+    Checks if a compass-direction of a _KarelOrientationTuple is vertically
     aligned
 
     @return   True if 'SOUTH' or 'NORTH'
@@ -201,7 +201,7 @@ class KarelOrientation(EnumLike):
 class Tile():
   """
   This class represents a Tile of the Karel-World. A Tile can have up to 1 walls
-  in eighter compass-direction and has n Beepers on it, which can be picked up 
+  in eighter compass-direction and has n Beepers on it, which can be picked up
   by Karel. A Tile has no information about its position in the Map.
 
   @param  surf      render-surface as pygame.Surface
@@ -394,14 +394,14 @@ class Karel():
 
 class World():
   """
-  Represents the World Karel is playing on. This class only represents the 
+  Represents the World Karel is playing on. This class only represents the
   dataclass and specifies the rendering of the World-object. This class has no
   information on any game-logic or karel.
 
   @param  tiles   a 2D-array of all tiles in the map KCS(1, 1) is INDEX(0, 0)
   @param  size    the size of the world in measured in Tiles
   @param  surf    render-surface as pygame.Surface
-  @param  rect    bounds of surf as pygame.Rect   
+  @param  rect    bounds of surf as pygame.Rect
   """
 
   tiles: List[List[Tile]]
@@ -544,7 +544,7 @@ class Level():
   for rendering and scaling the World and Karel.
 
   @param  surf        render-surface as pygame.Surface
-  @param  rect        bounds of surf as pygame.Rect   
+  @param  rect        bounds of surf as pygame.Rect
   @param  state       state of the Level as LevelState
   @param  speed       current Karel-Actions per seconds
   @param  world       World-object
@@ -755,7 +755,7 @@ class Level():
 
   def karelPutBeeper(self) -> None:
     """
-    is a Karel-Action. Makes Karel put a beeper at current position. If Karel 
+    is a Karel-Action. Makes Karel put a beeper at current position. If Karel
     can not execute putBeeper a Error is raised.
     """
     if self.playable():

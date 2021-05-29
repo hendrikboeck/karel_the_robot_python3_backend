@@ -28,7 +28,7 @@ EXIT_SUCCESS = 0
 EXIT_FAILURE = 1
 
 
-def exit(e_code: int = EXIT_SUCCESS) -> NoReturn:
+def exitc(e_code: int = EXIT_SUCCESS) -> NoReturn:
   """
   """
   sys.exit(e_code)
@@ -38,7 +38,8 @@ def errorExit(text: str = None, e_code: int = EXIT_FAILURE) -> NoReturn:
   """
   """
   if text is not None: IOM.error(text)
-  exit(e_code)
+  exitc(e_code)
+
 
 def fileExists(path: str) -> bool:
   """

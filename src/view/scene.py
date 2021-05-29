@@ -21,7 +21,6 @@ from abc import ABC, abstractmethod
 from typing import Any, Union
 
 # LIBRARY IMPORT
-import pygame as pg
 from pygame import Rect, Surface
 from pygame.event import Event
 from pygame_gui.ui_manager import UIManager
@@ -111,7 +110,9 @@ class GameScene(ISceneInterface):
 
     screen.blit(self.backgroundSurf, (0, 0))
     self.uiManager.draw_ui(screen)
-    level.rect.center = ((WINDOW_DIMENSIONS.x + 300) / 2, WINDOW_DIMENSIONS.y / 2)
+    level.rect.center = (
+        (WINDOW_DIMENSIONS.x + 300) / 2, WINDOW_DIMENSIONS.y / 2
+    )
     level.render(screen)
 
   def proccessEvent(self, event: Event) -> Union[Any, None]:

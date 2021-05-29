@@ -25,7 +25,7 @@ import pygame as pg
 # LOCAL IMPORT
 from constants import GAME_FONT, WINDOW_TOP_RIGHT
 import assets
-from assets.color import Basics, HexColor
+from assets.color import Basics
 
 
 class Overlay(pg.Surface, ABC):

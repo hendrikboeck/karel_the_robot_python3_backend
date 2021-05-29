@@ -86,12 +86,12 @@ class _IOTuple(NamedTuple):
 class IOManager():
   """
   The IOManager defines a interface for human-interaction.  And serializes this
-  interface for easy access and manipulation and control over amount of 
+  interface for easy access and manipulation and control over amount of
   information which the user/developer can get.
 
   @param  _streams            _IOTuple of all streams
   @param  _labelColors        tuple of colors corresponding to streams
-  @param  show_caller_info    
+  @param  show_caller_info
   @param  show_label_out_msgs
   @param  show_debug_msgs
   """
@@ -106,10 +106,10 @@ class IOManager():
   def __init__(self, conf: Dict[str, Any]) -> None:
     """
     constructor
-   
+
     @param  conf  Dictionary, which describes a IOManager and enables the
         specification over a global configuration-file, which specifies the
-        Flags. The default Flags can be viewed by calling the Function 
+        Flags. The default Flags can be viewed by calling the Function
         'createIOManagerDefaultConfig'.
     """
     self._streams = None
@@ -123,10 +123,10 @@ class IOManager():
   def load(self, conf: Dict[str, Any]) -> None:
     """
     Loads another configuration into the IOManager.
-        
-    @param  conf  Dictionary, which describes a IOManager and enables the 
-        specification over a global configuration-file, which specifies the 
-        Flags. The default Flags can be viewed by calling the Function 
+
+    @param  conf  Dictionary, which describes a IOManager and enables the
+        specification over a global configuration-file, which specifies the
+        Flags. The default Flags can be viewed by calling the Function
         'createIOManagerDefaultConfig'.
     """
     self._streams = _IOTuple(
@@ -146,9 +146,9 @@ class IOManager():
 
   def _printCallerInformation(self, stream: TextIO) -> None:
     """
-    Prints the caller-information. Farmated as 'function' or 'Class.function', 
+    Prints the caller-information. Farmated as 'function' or 'Class.function',
     if memberfunction
-   
+
     @param  stream  stream the information should be print to
     """
     # only print caller-information, if 'show_caller_info' flag is set
@@ -166,12 +166,11 @@ class IOManager():
       caller += str(inspect.stack()[2].function)
       print(f"{caller} :: ", end="", file=stream)
 
-  def _printLabel(
-      self, streamLabel: str, labelColor: str, stream: TextIO
-  ) -> None:
+  @staticmethod
+  def _printLabel(streamLabel: str, labelColor: str, stream: TextIO) -> None:
     """
     Prints the label onto the stream.
-   
+
     @param  streamLabel   name of the stream as str
     @param  labelColor    color of the label as str (e.g. '\033[97m')
     @param  stream        stream the label should be print to
@@ -186,7 +185,7 @@ class IOManager():
   def input(text: str = "") -> str:
     """
     Gets an input from the commandline.
-   
+
     @param  text  prompt for input
     @return       read string from the commandline
     """
@@ -196,7 +195,7 @@ class IOManager():
   def print(*values: object) -> None:
     """
     Wrapper for default print-function.  Should not be used, use 'out' instead.
-   
+
     @param  values  objects to print onto default stream
     """
     print(*values, end="")
@@ -267,6 +266,7 @@ def createIOManagerConfigFromDict(conf: Dict[str, Any]) -> Dict[str, Any]:
     else:
       raise Exception(f"unkown key {key} as {uKey}")
   return result
+
 
 # Global Variable which holds IOManager
 IOM = IOManager(createIOManagerDefaultConfig())

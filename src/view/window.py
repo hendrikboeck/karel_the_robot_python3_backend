@@ -40,8 +40,8 @@ class DebugInformationDict(metaclass=SingletonMeta):
 
   def update(self, **kwargs: Dict[str, Any]) -> None:
     for key, value in kwargs.items():
-      self._internal[str(key)] =  value
-  
+      self._internal[str(key)] = value
+
   def get(self, key: str) -> Any:
     return self._internal.get(key)
 
@@ -54,7 +54,13 @@ class DebugWindow(UIWindow):
   labelDict: OrderedDict[str, GLabel]
 
   def __init__(self, manager: UIManager, resizable: bool):
-    super().__init__(pg.Rect(0, 0, 0, 0), manager, "Debug", resizable=resizable, visible=False)
+    super().__init__(
+        pg.Rect(0, 0, 0, 0),
+        manager,
+        "Debug",
+        resizable=resizable,
+        visible=False
+    )
     self.labelDict = OrderedDict()
     self._labelPos = Vector2f(self.MARGIN, self.MARGIN)
 
@@ -90,7 +96,8 @@ class DebugWindow(UIWindow):
     if id_:
       self.labelDict[id_] = GLabel(
           relative_rect=pg.Rect(
-              label.get_relative_rect().width + self._labelPos.x, self._labelPos.y, 0, 0
+              label.get_relative_rect().width + self._labelPos.x,
+              self._labelPos.y, 0, 0
           ),
           manager=self.ui_manager,
           container=self
@@ -107,7 +114,10 @@ class DebugWindow(UIWindow):
     super().update(timedelta)
 
   def toggle(self) -> None:
-    self.hide() if self.visible else self.show()
+    if self.visible:
+      self.hide()
+    else:
+      self.show()
 
   def kill(self) -> None:
     self.hide()

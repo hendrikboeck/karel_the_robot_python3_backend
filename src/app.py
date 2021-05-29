@@ -41,7 +41,7 @@ class App():
   def main(args: list) -> None:
     """
     The 'main' fuction of the program.
-   
+
     @param  args  list of arguments from the commandline
     @return       None
     """

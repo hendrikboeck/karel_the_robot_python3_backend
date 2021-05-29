@@ -36,7 +36,7 @@ from .elements import GLabel
 class ClickButtonMenu(UIPanel):
   """
   Dropdown-style menu that gets shown on Rightclick.
- 
+
   @param  menuitems   ordered dict of menuitems
   @param  dim         ordered dict of menuitems
   """
@@ -49,7 +49,7 @@ class ClickButtonMenu(UIPanel):
   def __init__(self, manager: UIManager, assetsPath: str = None) -> None:
     """
     constructor
-   
+
     @param  manager                 UIManager for pygame_gui elements
     @param  assetsPath [optional]   path to .xml-file containing menu-config
     """
@@ -65,9 +65,9 @@ class ClickButtonMenu(UIPanel):
   def process_event(self, event: pg.event.Event) -> bool:
     """
     Can be overridden, also handle resizing windows. Gives UI Windows access to
-    pygame events. Currently just blocks mouse click down events from passing 
+    pygame events. Currently just blocks mouse click down events from passing
     through the panel.
-   
+
     @param  event   the event to process
     @return         should return True if this element consumes this event
     """
@@ -87,7 +87,7 @@ class ClickButtonMenu(UIPanel):
     """
     Adds a new listitem, which is identified by a key, to the menu.  The item
     will be returned or can be accessed through function 'getListItem'.
-   
+
     @param  key   key for identification of object inside menu
     @param  text  the text of the menuitem
     @return       newly created listitem (UIButton)
@@ -128,7 +128,7 @@ class ClickButtonMenu(UIPanel):
     """
     Returns the listitem to a given key inside menu.  If key dos not exist None
     will be returned.
-   
+
     @param  key   key for identification of object inside menu
     @return       coresponding listitem (UIButton) for key
     """
@@ -156,7 +156,7 @@ class Sidemenu(UIPanel):
     constructor
 
     @param  manager   UIManager for pygame_gui elements
-    @param  width     if width < 1, then it will be dynamicaly sized of 
+    @param  width     if width < 1, then it will be dynamicaly sized of
         WINDOW_DIMENSIONS, if width >= 1, then it will be absolute sized
     """
     if width < 1:
@@ -215,9 +215,9 @@ class Sidemenu(UIPanel):
   def process_event(self, event: pg.event.Event) -> bool:
     """
     Can be overridden, also handle resizing windows. Gives UI Windows access to
-    pygame events. Currently just blocks mouse click down events from passing 
+    pygame events. Currently just blocks mouse click down events from passing
     through the panel.
-   
+
     @param  event   the event to process
     @return         should return True if this element consumes this event
     """
@@ -230,7 +230,7 @@ class Sidemenu(UIPanel):
   def update(self, time_delta: float) -> None:
     """
     Update speedLabel and post events.
-    
+
     @overwrite
 
     @param  time_delta  time of last frame in s
