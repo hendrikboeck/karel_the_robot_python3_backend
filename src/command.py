@@ -311,9 +311,7 @@ class GameLoadWorldCommand(Command):
 
   def execute(self) -> CommandResult:
     try:
-      bounds = WINDOW_DIMENSIONS
-      bounds.x -= 320
-      bounds.y -= 20
+      bounds = WINDOW_DIMENSIONS - (320, 20)
       LevelManager().setCurrentLevel(Level(self.args["map"], bounds))
       SceneManager().setScene(GameScene())
       return CommandResult(self.id_, None)
@@ -343,23 +341,23 @@ class CommandFactory(metaclass=SingletonMeta):
   @param  COMMAND_TABLE   Map of API-names to Command-child-classes
   """
 
-  COMMAND_TABLE: Dict[str, Command] = {
-      "move": KarelMoveCommand,
-      "turnLeft": KarelTurnLeftCommand,
-      "pickBeeper": KarelPickBeeperCommand,
-      "putBeeper": KarelPutBeeperCommand,
-      "frontIsClear": KarelFrontIsClearCommand,
-      "rightIsClear": KarelRightIsClearCommand,
-      "leftIsClear": KarelLeftIsClearCommand,
-      "beeperInBag": KarelBeeperInBagCommand,
-      "beeperPresent": KarelBeeperPresentCommand,
-      "facingNorth": KarelFacingNorthCommand,
-      "facingEast": KarelFacingEastCommand,
-      "facingSouth": KarelFacingSouthCommand,
-      "facingWest": KarelFacingWestCommand,
-      "loadWorld": GameLoadWorldCommand,
-      "EOS": GameCloseCommand
-  }
+  COMMAND_TABLE: Dict[str, Command] = dict(
+      move=KarelMoveCommand,
+      turnLeft=KarelTurnLeftCommand,
+      pickBeeper=KarelPickBeeperCommand,
+      putBeeper=KarelPutBeeperCommand,
+      frontIsClear=KarelFrontIsClearCommand,
+      rightIsClear=KarelRightIsClearCommand,
+      leftIsClear=KarelLeftIsClearCommand,
+      beeperInBag=KarelBeeperInBagCommand,
+      beeperPresent=KarelBeeperPresentCommand,
+      facingNorth=KarelFacingNorthCommand,
+      facingEast=KarelFacingEastCommand,
+      facingSouth=KarelFacingSouthCommand,
+      facingWest=KarelFacingWestCommand,
+      loadWorld=GameLoadWorldCommand,
+      EOS=GameCloseCommand
+  )
 
   def create(
       self, functionName: str, id_: int, args: Dict[str, Any]
