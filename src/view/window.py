@@ -22,13 +22,14 @@ from typing import Any, Dict
 
 # LIBRARY IMPORT
 import pygame as pg
-from pygame_gui.elements import UIWindow
+from pygame_gui.elements import UIWindow, UITextBox
 from pygame_gui.ui_manager import UIManager
 
 # LOCAL IMPORT
 import assets
-from pyadditions.types import Vector2f, SingletonMeta, promiseList
+from pyadditions.types import Vector2f, SingletonMeta, classname, promiseList
 from .elements import GLabel
+from constants import WINDOW_CENTER, WINDOW_DIMENSIONS
 
 
 class DebugInformationDict(metaclass=SingletonMeta):
@@ -44,6 +45,33 @@ class DebugInformationDict(metaclass=SingletonMeta):
 
   def get(self, key: str) -> Any:
     return self._internal.get(key)
+
+
+class ErrorWindow(UIWindow):
+
+  def __init__(self, manager: UIManager, title: str, content: str):
+    super().__init__(
+        pg.Rect(WINDOW_CENTER.x - 150, WINDOW_CENTER.y - 100, 300, 200),
+        manager,
+        title,
+        resizable=False,
+        visible=True
+    )
+    tbox = UITextBox(
+      f"<p align=\"justify\">{content}<p>",
+      pg.Rect(0, 0, 298, 171),
+      manager=self.ui_manager,
+      container=self,
+      wrap_to_height=True
+    )
+    tboxRelativeRect = tbox.get_relative_rect()
+    self.set_dimensions((tboxRelativeRect.width + 2, tboxRelativeRect.height + 29))
+
+  def managerProcessEvents(self, event: pg.event.Event) -> None:
+    self.ui_manager.process_events(event)
+
+  def render(self, surf: pg.Surface) -> None:
+    self.ui_manager.draw_ui(surf)
 
 
 class DebugWindow(UIWindow):

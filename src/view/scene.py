@@ -28,10 +28,12 @@ from pygame_gui.ui_manager import UIManager
 # LOCAL IMPORT
 from constants import WINDOW_DIMENSIONS, WINDOW_CENTER, SCREEN_BACKGROUND_COLOR
 from game import LevelManager
+from pyadditions.io import IOM
 from view.menu import Sidemenu
 import assets
 from assets.color import HexColor
 from pyadditions.types import SingletonMeta
+from view.window import ErrorWindow
 
 
 class ISceneInterface(ABC):
@@ -102,18 +104,23 @@ class GameScene(ISceneInterface):
 
     self.backgroundSurf = Surface(tuple(WINDOW_DIMENSIONS))
     self.backgroundSurf.fill(SCREEN_BACKGROUND_COLOR)
-    self.uiManager = assets.load.uimanager("theme/Sidemenu.json")
+    self.uiManager = assets.load.uimanager("theme/GameScene.json")
     self.sidemenu = Sidemenu(self.uiManager, 300)
 
-  def render(self, screen: Surface) -> None:
-    level = LevelManager().getCurrentLevel()
+  def showErrorWindow(self, title: str, content: str) -> None:
+    IOM.debug("Creating ErrorWindow")
+    ErrorWindow(self.uiManager, title, content)
 
+  def render(self, screen: Surface) -> None:
     screen.blit(self.backgroundSurf, (0, 0))
-    self.uiManager.draw_ui(screen)
+
+    level = LevelManager().getCurrentLevel()
     level.rect.center = (
         (WINDOW_DIMENSIONS.x + 300) / 2, WINDOW_DIMENSIONS.y / 2
     )
     level.render(screen)
+
+    self.uiManager.draw_ui(screen)
 
   def proccessEvent(self, event: Event) -> Union[Any, None]:
     level = LevelManager().getCurrentLevel()

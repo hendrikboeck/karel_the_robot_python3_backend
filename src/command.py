@@ -22,7 +22,7 @@ from typing import Any, Dict, NamedTuple
 
 # LOCAL-IMPORT
 from pyadditions.types import SingletonMeta, classname
-from game import Level, LevelManager, LevelState
+from game import ActionExecutionError, Level, LevelManager, LevelState
 from view.scene import GameScene, SceneManager
 from constants import WINDOW_DIMENSIONS
 
@@ -69,6 +69,16 @@ class Command(ABC):
     """
     raise NotImplementedError()
 
+  def pushErrorWindow(
+      self, error: RuntimeError, problem: str, p_solution: str
+  ) -> None:
+    scene = SceneManager().getScene()
+    if isinstance(scene, GameScene):
+      scene.showErrorWindow(
+          classname(error), f"<b>PROBLEM:</b><br/>{problem}<br/> <br/>"
+          f"<b>POSSIBLE SOLUTION:</b><br/>{p_solution}"
+      )
+
 
 class KarelMoveCommand(Command):
   """
@@ -86,6 +96,12 @@ class KarelMoveCommand(Command):
       level.pause()
       return CommandResult(self.id_, None)
     except RuntimeError as err:
+      if isinstance(err, ActionExecutionError):
+        self.pushErrorWindow(
+            err, "Karel hit a wall, while trying to <i>move</i>.",
+            "Try to run function <i>frontIsClear</i> before moving. The result "
+            "of this function will tell you, if Karel can <i>move</i>."
+        )
       return CommandResult(self.id_, classname(err))
 
 
@@ -124,6 +140,15 @@ class KarelPickBeeperCommand(Command):
       level.pause()
       return CommandResult(self.id_, None)
     except RuntimeError as err:
+      if isinstance(err, ActionExecutionError):
+        self.pushErrorWindow(
+            err,
+            "Karel was not able to <i>pickPicker</i>, because no Beeper exists "
+            "at Karels current position.",
+            "Try to run function <i>beeperPresent</i> before picking a Beeper. "
+            "The result of this function will tell you, if at least one Beeper "
+            "is present at Karels current position."
+        )
       return CommandResult(self.id_, classname(err))
 
 
@@ -143,6 +168,15 @@ class KarelPutBeeperCommand(Command):
       level.pause()
       return CommandResult(self.id_, None)
     except RuntimeError as err:
+      if isinstance(err, ActionExecutionError):
+        self.pushErrorWindow(
+            err,
+            "Karel was not able to <i>putPicker</i>, because Karel has no "
+            "Beepers left in his bag.",
+            "Try to run function <i>beeperInBag</i> before putting a Beeper. "
+            "The result of this function will tell you, if at least one Beeper "
+            "is left in Karels bag."
+        )
       return CommandResult(self.id_, classname(err))
 
 
