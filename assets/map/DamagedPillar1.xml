@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- DOCUMENT START -->
+<map size="(13, 9)" speed="0.5">
+
+  <!-- METADATA -->
+  <metadata name="DamagedPillar1" version="1.0" author="Unkown" />
+
+  <!-- MAP OBJECTS -->
+  <karel position="(1, 1)" orientation="EAST" beeperbag="inf" />
+  <wall start="(1, 6)" length="1" orientation="SOUTH" />
+  <wall start="(2, 6)" length="1" orientation="WEST" />
+  <wall start="(2, 7)" length="1" orientation="SOUTH" />
+  <wall start="(3, 7)" length="1" orientation="WEST" />
+  <wall start="(3, 8)" length="1" orientation="SOUTH" />
+  <wall start="(4, 7)" length="1" orientation="WEST" />
+  <wall start="(4, 7)" length="1" orientation="SOUTH" />
+  <wall start="(5, 6)" length="1" orientation="WEST" />
+  <wall start="(5, 6)" length="1" orientation="SOUTH" />
+  <wall start="(6, 6)" length="1" orientation="WEST" />
+  <wall start="(6, 7)" length="1" orientation="SOUTH" />
+  <wall start="(7, 7)" length="1" orientation="WEST" />
+  <wall start="(7, 8)" length="1" orientation="SOUTH" />
+  <wall start="(8, 7)" length="1" orientation="WEST" />
+  <wall start="(8, 7)" length="1" orientation="SOUTH" />
+  <wall start="(9, 6)" length="1" orientation="WEST" />
+  <wall start="(9, 6)" length="1" orientation="SOUTH" />
+  <wall start="(10, 6)" length="1" orientation="WEST" />
+  <wall start="(10, 7)" length="1" orientation="SOUTH" />
+  <wall start="(11, 7)" length="1" orientation="WEST" />
+  <wall start="(11, 8)" length="1" orientation="SOUTH" />
+  <wall start="(12, 7)" length="1" orientation="WEST" />
+  <wall start="(12, 7)" length="1" orientation="SOUTH" />
+  <wall start="(13, 6)" length="1" orientation="WEST" />
+  <wall start="(13, 6)" length="1" orientation="SOUTH" />
+  <beeper position="(1, 4)" n="1" />
+  <beeper position="(1, 5)" n="1" />
+  <beeper position="(5, 1)" n="1" />
+  <beeper position="(5, 2)" n="1" />
+  <beeper position="(5, 4)" n="1" />
+  <beeper position="(9, 3)" n="1" />
+  <beeper position="(9, 5)" n="1" />
+  <beeper position="(13, 1)" n="1" />
+  <beeper position="(13, 3)" n="1" />
+  <beeper position="(13, 5)" n="1" />
+
+</map>
+<!-- DOCUMENT END -->

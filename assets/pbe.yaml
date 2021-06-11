@@ -1,0 +1,58 @@
+################################################################################
+# karel_the_robot_python3_backend                                              #
+# Copyright (C) 2021  Hendrik Boeck <hendrikboeck.dev@protonmail.com>          #
+#                                                                              #
+# This program is free software: you can redistribute it and/or modify         #
+# it under the terms of the GNU General Public License as published by         #
+# the Free Software Foundation, either version 3 of the License, or            #
+# (at your option) any later version.                                          #
+#                                                                              #
+# This program is distributed in the hope that it will be useful,              #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of               #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                #
+# GNU General Public License for more details.                                 #
+#                                                                              #
+# You should have received a copy of the GNU General Public License            #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.        #
+################################################################################
+
+# Sets the upper limit for fps.
+#
+maxfps: 144
+
+# Specify the type and port of websocket.
+# -----
+# Values: <tcp, udp>/<port>
+#
+socket: tcp/14480
+
+# Controls wether pygame-warnings will be shown.
+#
+pygame_show_warnings: false
+
+# iomanager configuration
+#
+iomanager:
+
+  # Sets wether debug-messages will be shown.
+  #
+  show_debug_messages: true
+  
+  # Sets wether caller-information will be shown on messages. The messages will
+  # be printed between label and msg-content. It is fromated as Class.function,
+  # if function is not memberfunction than only functionname will be printed.
+  #
+  show_caller_information: false
+  
+  # Sets wheter a label for out-messages will be printed.
+  #
+  show_label_out_messages: true
+  
+  # Sets the color of the different labels.
+  # -----
+  # Values: DEFAULT, BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, LGRAY,
+  #     DGRAY, LRED, LGREEN, LYELLOW, LBLUE, LMAGENTA, LCYAN, WHITE, NULL
+  #
+  debug_label_color: CYAN
+  error_label_color: RED
+  out_label_color: DGRAY

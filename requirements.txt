@@ -1,0 +1,6 @@
+pygame
+pygame_gui
+pyyaml
+psutil
+yapf
+pyinstaller

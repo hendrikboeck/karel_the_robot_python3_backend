@@ -1,0 +1,25 @@
+{
+  "#no_border_shadow": {
+    "misc": {
+      "border_width": "0",
+      "shadow_width": "0"
+    }
+  },
+  "window": {
+    "prototype": "#no_border_shadow",
+    "__misc": {
+      "enable_close_button": "0",
+      "title_bar_height": "0"
+    }
+  },
+  "button": {
+    "prototype": "#no_border_shadow",
+    "misc": {
+      "text_horiz_alignment": "left",
+      "text_horiz_alignment_padding": "10"
+    }
+  },
+  "panel": {
+    "prototype": "#no_border_shadow"
+  }
+}

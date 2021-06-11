@@ -1,0 +1,8 @@
+**/__pycache__
+__pyproject.toml
+client.py
+countlines.py
+.vscode
+env
+build
+dist

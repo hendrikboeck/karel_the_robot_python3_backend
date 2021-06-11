@@ -1,0 +1,42 @@
+{
+  "button": {
+    "misc": {
+      "shadow_width": "0"
+    }
+  },
+  "panel": {
+    "misc": {
+      "border_width": "0",
+      "shadow_width": "0"
+    }
+  },
+  "horizontal_slider": {
+    "misc": {
+      "shape": "rectangle",
+      "enable_arrow_buttons": "0",
+      "sliding_button_width": "27",
+      "shadow_width": "0"
+    }
+  },
+  "text_box": {
+    "misc": {
+      "shape": "rectangle",
+      "padding": "5,5",
+      "shadow_width": "0",
+      "border_width": "0"
+    },
+    "text_box.vertical_scroll_bar": {
+      "enable_arrow_buttons": "0"
+    },
+    "text_box.vertical_scroll_bar.#sliding_button": {
+      "misc": {
+        "border_width": "1"
+      }
+    }
+  },
+  "window": {
+    "misc": {
+      "shadow_width": "0"
+    }
+  }
+}

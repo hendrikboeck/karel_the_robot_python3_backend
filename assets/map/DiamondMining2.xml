@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- DOCUMENT START -->
+<map size="(15, 7)" speed="1.0">
+
+  <!-- METADATA -->
+  <metadata name="DiamondMining2" version="1.0" author="Unkown" />
+
+  <!-- MAP OBJECTS -->
+  <karel position="(1, 5)" orientation="EAST" beeperbag="inf" />
+  <wall start="(1, 5)" length="1" orientation="SOUTH" />
+  <wall start="(2, 2)" length="3" orientation="WEST" />
+  <wall start="(2, 2)" length="2" orientation="SOUTH" />
+  <wall start="(3, 3)" length="2" orientation="WEST" />
+  <wall start="(3, 3)" length="1" orientation="SOUTH" />
+  <wall start="(3, 5)" length="3" orientation="SOUTH" />
+  <wall start="(4, 2)" length="1" orientation="WEST" />
+  <wall start="(5, 3)" length="1" orientation="WEST" />
+  <wall start="(5, 3)" length="3" orientation="SOUTH" />
+  <wall start="(5, 4)" length="1" orientation="SOUTH" />
+  <wall start="(6, 3)" length="1" orientation="SOUTH" />
+  <wall start="(6, 4)" length="1" orientation="WEST" />
+  <wall start="(7, 3)" length="1" orientation="SOUTH" />
+  <wall start="(7, 4)" length="1" orientation="WEST" />
+  <wall start="(7, 4)" length="1" orientation="SOUTH" />
+  <wall start="(7, 5)" length="4" orientation="SOUTH" />
+  <wall start="(8, 3)" length="1" orientation="WEST" />
+  <wall start="(10, 2)" length="1" orientation="WEST" />
+  <wall start="(10, 2)" length="3" orientation="SOUTH" />
+  <wall start="(10, 3)" length="1" orientation="SOUTH" />
+  <wall start="(11, 3)" length="2" orientation="WEST" />
+  <wall start="(12, 3)" length="2" orientation="WEST" />
+  <wall start="(12, 3)" length="1" orientation="SOUTH" />
+  <wall start="(12, 5)" length="4" orientation="SOUTH" />
+  <wall start="(13, 2)" length="1" orientation="WEST" />
+  <beeper position="(3, 2)" n="1" />
+  <beeper position="(5, 3)" n="1" />
+  <beeper position="(7, 3)" n="1" />
+  <beeper position="(11, 2)" n="1" />
+  <beeper position="(12, 2)" n="1" />
+  
+</map>
+<!-- DOCUMENT END -->

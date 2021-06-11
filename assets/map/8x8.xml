@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- DOCUMENT START -->
+<map size="(8, 8)" speed="0.75">
+
+  <!-- METADATA -->
+  <metadata name="8x8" version="1.0" author="Unkown" />
+
+  <!-- MAP OBJECTS -->
+  <karel position="(1, 1)" orientation="EAST" beeperbag="inf" />
+
+</map>
+<!-- DOCUMENT END -->
