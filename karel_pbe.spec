@@ -1,14 +1,14 @@
 # -*- mode: python ; coding: utf-8 -*-
 from sys import platform
-from sys import version
+from sys import version_info
 
 if platform.startswith("win"):
   # WINDOWS
   sitepackages = "env/Lib/site-packages"
 else:
   # UNIXLIKE
-  print(version)
-  sitepackages = "env/lib/python3.9/site-packages"
+  pyversion = f"{version_info.major}.{version_info.minor}"
+  sitepackages = f"env/lib/python{pyversion}/site-packages"
 
 assets = [
     ('assets/64x/beeper.png', 'assets/64x'),

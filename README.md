@@ -10,8 +10,7 @@
   - [2.1. Downloading a Frontend](#21-downloading-a-frontend)
   - [2.2. Downloading PBE](#22-downloading-pbe)
   - [2.3. Building PBE](#23-building-pbe)
-    - [2.3.1. Unixlike](#231-unixlike)
-    - [2.3.2. Windows](#232-windows)
+  - [2.4. Maps](#24-maps)
 - [3. Frontends](#3-frontends)
   - [3.1. Create your own](#31-create-your-own)
   - [3.2. API](#32-api)
@@ -38,15 +37,21 @@ You can find a list of frontend under [3. Frontends](#3-frontends). Most fronten
 
 ## 2.2. Downloading PBE
 
-If you are creating a frontend or want to update your bundled PBE, than you can download a precompiled version of the PBE for your system under the releases tab.
+If you are creating a frontend or want to update your bundled PBE, than you can download a precompiled version of the PBE for your system under the [Releases](https://github.com/hendrikboeck/karel_the_robot_python3_backend/releases) tab. The downloaded directory will have the following structure. If you want to add maps just place your .xml-files in `PBE_PKG/assets/map`.
+
+```
+PBE_PKG
+├── assets
+│   ├── map
+│   │   ├── 1x1.xml
+│   │   ├── 1x8.xml
+│   │   └── ...
+│   └── pbe.yaml
+├── karel_pbe
+└── run_karel_pbe.sh
+```
 
 ## 2.3. Building PBE
-
-If you just want to add maps or change assets, you can simply do that with your current PBE, just add maps into `assets/map/yourmap.xml`, or change existing assets by copying the `assets` folder from this repo and edit the resource you want to change.
-
-If however none of the above options suits you, you can compile the PBE yourself. If your python version is not 3.9, than you have to change the path for the assets in the `pbe_unixlike.spec` from `env/lib/python3.9/...` to `env/lib/python3.*/...` (the version you are using, get with `python3 --version`), if you are running Linux or MacOS.
-
-### 2.3.1. Unixlike
 
 ```sh
 # clone the repo and cd into into it
@@ -59,33 +64,39 @@ python3 -m venv env
 pip install -r requirements.txt
 
 # build the project
-pyinstaller pbe_unixlike64.spec
+pyinstaller karel_pbe.spec
 ```
 
-Now you have to create a folder `assets` in the folder, where you want to execute `./karel_pbe`, and copy the file `assets/pbe.yaml` to your `assets` folder.
+Now you have to create a folder `assets` in the folder, where you want to execute `./karel_pbe`, and copy the file `assets/pbe.yaml` to your `assets` folder and your `.xml`-files into the `assets/map` folder.
 
-### 2.3.2. Windows
+## 2.4. Maps
 
-```bat
-:: clone the repo and cd into into it
-git clone https://github.com/hendrikboeck/karel_the_robot_python3_backend.git
-cd karel_the_robot_python3_backend
+New maps can be added by adding the file to the `assets/map` folder. If you want to create a new map use the following example: 
 
-:: create a virtual env and download dependecies
-python3 -m venv env
-./env/Scripts/Activate
-pip install -r requirements.txt
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
 
-:: build the project
-pyinstaller pbe_unixlike64.spec
+<!-- DOCUMENT START -->
+<map size="(10, 7)" speed="1.00">
+
+  <!-- METADATA -->
+  <metadata name="TestRoom" version="1.0" author="Hendrik Boeck" />
+
+  <!-- MAP OBJECTS -->
+  <karel position="(1, 2)" orientation="SOUTH" beeperbag="inf" />
+  <wall start="(7, 1)" length="3" orientation="WEST" />
+  <wall start="(7, 4)" length="4" orientation="SOUTH" />
+  <beeper position="(8, 4)" n="2" />
+
+</map>
+<!-- DOCUMENT END -->
 ```
-
-Now you have to create a folder `assets` in the folder, where you want to execute `./karel_pbe`, and copy the file `assets/pbe.yaml` to your `assets` folder.
 
 # 3. Frontends
 | Language | Language Version | Project |
 | -------- |:----------------:| ------- |
 | Java | 11 =< | [hendrikboeck/karel_the_robot_java_frontend](https://github.com/hendrikboeck/karel_the_robot_java_frontend) |
+| C | 99 =< | [hendrikboeck/karel_the_robot_c_frontend](https://github.com/hendrikboeck/karel_the_robot_c_frontend) |
 
 ## 3.1. Create your own
 The project uses a websocket as its communication. It can be configured over the configuration (`assets/pbe.yaml`) file. The backend supports UDP as well as TCP-sockets. The commands use a variation of JSON-RPC as its format (more accurate information and all the commands can be found under [3.2. API](#32-api)). You dont have to check if an instance of the Karel is already running. The backend will not start if the port is occupied (this also means, do not use a port pre-occupied on your system).
